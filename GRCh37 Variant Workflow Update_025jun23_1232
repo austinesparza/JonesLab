@@ -1,0 +1,106 @@
+### GRCh37 Variant Workflow Update
+
+#### Context
+
+This update picks up from the previous BED-based transcript extraction step using UCSC Table Browser (GENCODE v19 annotations on GRCh37). The next logical step was to identify the appropriate dbSNP VCF file aligned to the GRCh37 assembly to enable variant filtering and CNV boundary exploration.
+
+---
+
+### Step 3: Determine Correct dbSNP VCF File (GRCh37-aligned)
+
+After reviewing the NCBI FTP structure, the correct VCF file corresponding to GRCh37 is:
+
+```
+https://ftp.ncbi.nih.gov/snp/redesign/latest_release/VCF/GCF_000001405.25.gz
+```
+
+**Validation Method:**
+
+* The `.25` in `GCF_000001405.25.gz` refers to **GRCh37.p13**, confirmed via:
+
+  * Searching the RefSeq accession `GCF_000001405.25` in NCBI Genome browser.
+  * Result: **Homo sapiens genome assembly GRCh37.p13**.
+  * Link to latest GRCh38 version: `GCF_000001405.40` (not used).
+
+**Why not use the archive folder?**
+
+* `/snp/archive/` contains legacy dbSNP builds tied to specific internal build versions (e.g., b152, b153, etc.), not necessarily mapped to current GCF identifiers.
+* The `redesign/latest_release/VCF` folder provides stable, GCF-linked, and NCBI-backed releases.
+
+**Associated Index Files:**
+
+```
+GCF_000001405.25.gz.tbi
+GCF_000001405.25.gz.md5
+GCF_000001405.25.gz.tbi.md5
+```
+
+These will be used with `bcftools` for indexed querying.
+
+---
+
+### Step 4: Local Installation and Troubleshooting Notes
+
+**Homebrew Issue:**
+
+* `brew` was reinstalling because `/opt/homebrew/bin` was not in PATH.
+
+**Fix:**
+
+```bash
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+source ~/.zprofile
+```
+
+**bcftools installed successfully:**
+
+```bash
+bcftools 1.22
+Using htslib 1.22
+```
+
+Confirmed working after PATH fix.
+
+---
+
+### Step 5: Directory Layout and File Setup
+
+All files to be saved under:
+
+```
+/Users/austinesparza/Downloads/JonesLab/dbsnp_latest/
+```
+
+Download commands:
+
+```bash
+wget https://ftp.ncbi.nih.gov/snp/redesign/latest_release/VCF/GCF_000001405.25.gz
+wget https://ftp.ncbi.nih.gov/snp/redesign/latest_release/VCF/GCF_000001405.25.gz.tbi
+```
+
+---
+
+### Next Steps
+
+**Step 6: Filter dbSNP Variants by BED Coordinates**
+
+Use `bcftools view` to subset variants by gene-defined regions (e.g., `CHEK2_longest_isoform.bed`):
+
+```bash
+bcftools view -R CHEK2_longest_isoform.bed GCF_000001405.25.gz -Oz -o CHEK2_dbsnp_subset.vcf.gz
+```
+
+**Step 7: Extract Pathogenic SNPs (ClinVar overlay)**
+
+* After extracting variants per gene, cross-reference with ClinVar pathogenic/likely pathogenic calls.
+* Optional: Use tools like `vcfanno` or `bcftools annotate` with ClinVar VCF.
+
+---
+
+### Reference Directories
+
+```
+~/Downloads/JonesLab/BED/          # transcript isoform regions
+~/Downloads/JonesLab/dbsnp_latest/ # dbSNP vcf & index
+~/Downloads/JonesLab/results/      # subsetted VCFs per gene
+```
