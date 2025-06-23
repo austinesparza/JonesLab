@@ -1,2 +1,58 @@
 # JonesLab
-CS Internship Codebase
+# CS Internship Codebase
+# Structural Variant Annotation & Gene Panel Reference
+
+## Project Overview
+This repository supports ongoing structural variant (SV) annotation and gene panel benchmarking work within a germline ovarian cancer discovery context. The primary objective is to ensure robust annotation of SVs and copy number variants (CNVs) within key ovarian cancer susceptibility genes using GRCh37 reference coordinates.
+
+This repository is maintained as part of the author's training under the U-GROW Summer Institute and is affiliated with the Jones Lab at Cedars-Sinai Medical Center. This repository contains **no protected health information** or internal datasets.
+
+## Scope and Objectives
+- Extract full-transcript, longest-isoform genomic coordinates for high-priority genes.
+- Annotate structural variant calls from anonymized cohort VCFs.
+- Curate pathway and function metadata for known EOC risk genes.
+- Support gene-based CNV enrichment analysis using public genomic tools and references.
+
+## Genes of Interest (GRCh37 Coordinates)
+A core gene panel was selected based on established literature and includes key DNA repair and checkpoint response genes. Coordinates are derived from GENCODE v19 (longest transcript).
+
+| Gene   | Pathway                    | Genomic Coordinates (GRCh37)       |
+|--------|-----------------------------|------------------------------------|
+| BRCA1  | Homologous Recombination   | chr17:43044294-43170245            |
+| BRCA2  | Homologous Recombination   | chr13:32890597-32972907            |
+| BRIP1  | Fanconi Anemia / HRR       | chr17:59760656-59938900            |
+| PALB2  | Homologous Recombination   | chr16:23614779-23652478            |
+| RAD51C | HRR / Fanconi Anemia       | chr17:56770004-56811583            |
+| RAD51D | Homologous Recombination   | chr17:33338986-33448312            |
+| ATM    | DNA Damage Response        | chr11:108179697-108332286          |
+| CHEK2  | DNA Damage Checkpoint      | chr22:29117587-29130709            |
+
+## Repository Structure
+```
+.
+├── data/
+│   ├── coordinates/            # BED files and verified gene region references
+│   ├── annotations/            # Annotated SV tables and transcript metadata
+├── scripts/                    # SV annotation and analysis scripts
+├── results/                    # Sanitized visual outputs (no cohort data)
+├── docs/                       # Literature review notes and pathway curation
+└── README.md                   # Project overview
+```
+
+## Tools Used
+- UCSC Genome Browser (GRCh37/hg19)
+- Ensembl / GENCODE v19
+- BEDtools, bcftools, awk
+- R (ggplot2, GenomicRanges)
+
+## Notes
+- This repository excludes internal cohort data, clinical call sets, or unpublished carrier frequency outputs.
+- All annotations and genomic regions are based on publicly available references.
+
+## Contact
+For questions, please contact:
+**Austin Esparza**  
+U-GROW Scholar  
+Jones Lab, Cedars-Sinai Medical Center  
+📧 austin.esparza@cshs.org
+📧 austin.m.esparza@gmail.com
