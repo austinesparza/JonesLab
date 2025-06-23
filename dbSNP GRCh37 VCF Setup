@@ -1,0 +1,83 @@
+# dbSNP GRCh37 VCF Setup
+
+**Date:** 2025-06-23
+**Author:** Austin Esparza
+
+This document outlines the setup process for acquiring dbSNP variant data for the GRCh37 build and intersecting it with risk gene regions. The focus is on reproducibility, efficient CLI tooling, and preparing downstream-ready filtered variant datasets.
+
+## Directory Setup
+
+```bash
+cd ~/Downloads/JonesLab
+mkdir -p dbsnp
+cd dbsnp
+```
+
+## Toolchain Installation (macOS M1/ARM)
+
+Install Homebrew and essential tools:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+echo 'eval "$\(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+echo 'export PATH="/opt/homebrew/bin:$PATH"' >> ~/.zshrc
+source ~/.zprofile
+source ~/.zshrc
+brew install wget bcftools
+```
+
+## File Acquisition (dbSNP GRCh37 VCF)
+
+Download the dbSNP release VCF and index from NCBI:
+
+```bash
+wget --show-progress \
+  https://ftp.ncbi.nih.gov/snp/redesign/latest_release/VCF/GCF_000001405.25.gz \
+  https://ftp.ncbi.nih.gov/snp/redesign/latest_release/VCF/GCF_000001405.25.gz.tbi
+```
+
+## Merging Gene Regions to BED
+
+Ensure you have a merged BED file of risk gene regions with gene labels:
+
+```bash
+output_merged="/Users/austinesparza/Downloads/JonesLab/BED/merged_genes_tagged.BED"
+temp_file=$(mktemp)
+for i in "${!genes[@]}"; do
+  gene="${genes[$i]}"
+  bed="${beds[$i]}"
+  awk -v gene="$gene" 'BEGIN{OFS="\t"} {print $1, $2, $3, gene}' "$bed" >> "$temp_file"
+done
+sort -k1,1 -k2,2n "$temp_file" > "$output_merged"
+rm "$temp_file"
+echo "Merged BED created at: $output_merged"
+```
+
+## Intersect dbSNP with Risk Gene Regions
+
+```bash
+bcftools view \
+  -R /Users/austinesparza/Downloads/JonesLab/BED/merged_genes_tagged.BED \
+  GCF_000001405.25.gz \
+  -Oz -o dbsnp_in_risk_genes.vcf.gz
+```
+
+## Index the Result
+
+```bash
+bcftools index dbsnp_in_risk_genes.vcf.gz
+```
+
+## Sanity Check
+
+```bash
+bcftools view dbsnp_in_risk_genes.vcf.gz | head -n 10
+```
+
+## Summary
+
+* Successfully installed Homebrew, wget, and bcftools.
+* Downloaded dbSNP GRCh37 VCF and index (26 GB).
+* Merged gene-specific BED files into a unified and sorted BED.
+* Extracted all SNPs overlapping risk gene regions using bcftools.
+* Generated an indexed, filtered VCF (dbsnp\_in\_risk\_genes.vcf.gz) for use in downstream variant interpretation and enrichment analyses.
