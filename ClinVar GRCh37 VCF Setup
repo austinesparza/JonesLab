@@ -1,0 +1,73 @@
+# ClinVar GRCh37 VCF Setup
+
+**Date:** 2025-06-23
+**Author:** Austin Esparza
+
+This repository documents the retrieval and preparation of GRCh37-based ClinVar variant data for BRCA1-focused filtering and downstream CNV/variant discovery workflows. All steps prioritize reproducibility, structured file organization, and compatibility with command-line bioinformatics workflows.
+
+Create and navigate to a dedicated working directory for the ClinVar dataset:
+
+```bash
+mkdir -p ~/Downloads/JonesLab/ClinVar_GRCh37_20250615
+cd ~/Downloads/JonesLab/ClinVar_GRCh37_20250615
+```
+
+Initial download attempts using timestamped filenames inferred from a prior FTP directory snapshot failed with 404 errors:
+
+```bash
+curl -O https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/clinvar_20250615.vcf.gz
+curl -O https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/clinvar_20250615.vcf.gz.tbi
+```
+
+These filenames do not exist on the current NCBI server. After validating the correct filenames via browser, the correct files were downloaded using wget:
+
+```bash
+wget https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/clinvar.vcf.gz
+wget https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/clinvar.vcf.gz.tbi
+```
+
+To ensure robust support for wget on macOS with ARM architecture (M1), Homebrew was installed and configured as follows:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+eval "$(/opt/homebrew/bin/brew shellenv)"
+brew install wget
+```
+
+After installation, file integrity was confirmed:
+
+```bash
+ls -lh
+```
+
+Expected output:
+
+```
+-rw-r--r--  1 austinesparza  staff   157M Jun 23 13:05 clinvar.vcf.gz
+-rw-r--r--  1 austinesparza  staff   549K Jun 23 13:05 clinvar.vcf.gz.tbi
+```
+
+Final directory contents:
+
+```
+~/Downloads/JonesLab/ClinVar_GRCh37_20250615/
+├── clinvar.vcf.gz
+└── clinvar.vcf.gz.tbi
+```
+
+To extract all ClinVar variants located in the BRCA1 region (GRCh37: chr17:41196312-41322266), the following command can be used:
+
+```bash
+bcftools view -r 17:41196312-41322266 clinvar.vcf.gz -Oz -o clinvar_BRCA1.vcf.gz
+bcftools index clinvar_BRCA1.vcf.gz
+```
+
+Alternatively, a predefined BED file can be used to extract the region:
+
+```bash
+bcftools view -R /path/to/BRCA1_transcript_full.BED clinvar.vcf.gz -Oz -o clinvar_BRCA1.vcf.gz
+bcftools index clinvar_BRCA1.vcf.gz
+```
+
+Summary: This process rebuilt the ClinVar directory from scratch after identifying non-existent timestamped files. Homebrew and wget were installed to support reliable scripted workflows on macOS. File integrity was verified, and the dataset is now ready for region-based variant filtering using bcftools. This setup ensures reproducibility for BRCA1-targeted variant analysis and future downstream integration.
