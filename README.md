@@ -41,7 +41,7 @@ A core gene panel was selected based on established literature and includes key 
 
 ## Tools Used
 - UCSC Genome Browser (GRCh37/hg19)
-- Ensembl / GENCODE v19
+- Ensembl / GENCODE V48lift37
 - BEDtools, bcftools, awk
 - R (ggplot2, GenomicRanges)
 
