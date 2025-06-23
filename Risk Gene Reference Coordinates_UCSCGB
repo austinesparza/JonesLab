@@ -1,0 +1,55 @@
+### Workflow Summary
+
+#### Step 1: Download BED Files via UCSC Table Browser
+
+For each of the eight germline ovarian cancer risk genes, transcript-level BED files were exported using the UCSC Table Browser.
+
+**Table Browser Settings:**
+- Clade: Mammal  
+- Genome: Human  
+- Assembly: GRCh37/hg19  
+- Group: Genes and Gene Predictions  
+- Track: GENCODE v19  
+- Table: wgEncodeGencodeCompV19  
+- Region: Position (gene-specific)  
+- Output Format: BED (Browser Extensible Data)  
+- Output File: `GENE_transcript_full.BED`
+
+**Rationale:**
+- We selected **GENCODE v19** because it is the last GENCODE release mapped to GRCh37 and is considered the authoritative gene annotation source for that build. This aligns with the broader dataset context, which relies on GRCh37-based array data.
+- **Transcript-level BED output** ensures precise isoform resolution and compatibility with downstream filtering steps to determine the longest isoform per gene.
+- UCSC Table Browser was used instead of programmatic downloads due to its ease of isoform visualization, reliable filtering interface, and direct export of BED files suitable for sorting and length-based filtering.
+
+All BED files were saved under the following paths:
+
+```
+/Users/austinesparza/Downloads/JonesLab/BED/BRCA1_transcript_full.BED
+/Users/austinesparza/Downloads/JonesLab/BED/BRCA2_transcript_full.BED
+/Users/austinesparza/Downloads/JonesLab/BED/BRIP1_transcript_full.BED
+/Users/austinesparza/Downloads/JonesLab/BED/CHEK2_transcript_full.BED
+/Users/austinesparza/Downloads/JonesLab/BED/PALB2_transcript_full.BED
+/Users/austinesparza/Downloads/JonesLab/BED/ATM_transcript_full.BED
+/Users/austinesparza/Downloads/JonesLab/BED/RAD51C_transcript_full.BED
+/Users/austinesparza/Downloads/JonesLab/BED/RAD51D_transcript_full.BED
+```
+
+These files represent the complete list of annotated transcripts under GENCODE v19 for each gene.
+
+#### Step 2: Determine Longest Isoform
+
+To identify the longest isoform per gene (in terms of genomic span), a command-line filter was applied to each BED file:
+
+```bash
+open -a BBEdit /Users/austinesparza/Downloads/CHEK2_transcript_full.BED
+
+awk '{print $4, $3 - $2}' GENE_transcript_full.BED | sort -k2,2nr | head
+```
+
+This script:
+- Calculates the genomic span for each transcript (`end - start`)
+- Sorts all entries by span in descending order
+- Returns the transcript with the largest genomic length (usually, but not always, the canonical isoform)
+
+**Note:** This step prioritizes the transcript that spans the largest number of base pairs on the genome, consistent with our discovery-driven objective and UCSC track-based BED export. This method does not rely on MANE Select or RefSeq designations unless explicitly validated in follow-up analyses.
+
+All transcript ID and coordinate outputs were validated manually in UCSC Genome Browser and logged in the repository under `results/genomic_coordinates/`.
