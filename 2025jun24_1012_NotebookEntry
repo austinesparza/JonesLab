@@ -1,0 +1,81 @@
+# Variant Filtering and Annotation Workflow
+
+## Project Context
+
+**Objective**: This notebook documents the extraction, filtering, and annotation of ClinVar variants in ovarian cancer risk genes (OC risk genes) using the GRCh37 genome build. It supports a broader discovery-driven framework aimed at identifying potentially pathogenic variants in undercharacterized regions, with emphasis on structural variation and intronic signal enrichment.
+
+## Reference Datasets
+
+### ClinVar (GRCh37, 2025-06-15 Release)
+
+| File                                   | Description                                         |
+| -------------------------------------- | --------------------------------------------------- |
+| `clinvar.vcf.gz`                       | Full ClinVar dataset (GRCh37)                       |
+| `clinvar.vcf.gz.tbi` / `.tbi.1`        | Indexes for tabix queries                           |
+| `genes_of_interest_GRCh37_regions.txt` | Genomic intervals for 8 OC risk genes               |
+| `clinvar_EOC_genes.vcf.gz`             | Subset of ClinVar variants overlapping gene regions |
+| `clinvar_EOC_genes.vcf.gz.csi`         | Index file for subsetted ClinVar VCF                |
+| `clinvar_EOC_genes_pathogenic.vcf.gz`  | Pathogenic variant subset for downstream filtering  |
+
+### dbSNP (GRCh37, RefSeq 37.13 / likely build 151)
+
+| File                      | Description                  |
+| ------------------------- | ---------------------------- |
+| `GCF_000001405.25.gz`     | dbSNP reference VCF (GRCh37) |
+| `GCF_000001405.25.gz.tbi` | Tabix index                  |
+
+## Computing Environment
+
+**Machine**: MacBook Pro (M1 chip)
+**macOS Version**: Sequoia 15.3.1 (24D70)
+**Active working directory**: `~/Downloads/JonesLab/ClinVar_GRCh37_20250615/`
+
+### Installed Software
+
+| Tool       | Version | Function                                |
+| ---------- | ------- | --------------------------------------- |
+| `bcftools` | 1.22    | VCF filtering and annotation            |
+| `htslib`   | 1.22    | Core library for bgzip/tabix            |
+| `tabix`    | bundled | Indexing of compressed genomic data     |
+| `bgzip`    | bundled | Compression of text-based genomic files |
+
+## Completed Steps
+
+1. **Transcript Extraction**:
+
+   * Used UCSC Table Browser to export BED files for each gene using GENCODE v19 (last mapped to GRCh37).
+   * BED files were saved per gene and merged into:
+     `~/Downloads/JonesLab/BED/merged_genes_tagged.BED`
+
+2. **Isoform Selection**:
+
+   * Longest transcript for each gene determined by genomic span (end-start) using:
+
+     ```bash
+     awk '{print $4, $3 - $2}' GENE_transcript_full.BED | sort -k2,2nr | head
+     ```
+
+3. **ClinVar Filtering**:
+
+   * Subsetted `clinvar.vcf.gz` by merged BED to produce `clinvar_EOC_genes.vcf.gz`
+   * Filtered pathogenic variants to generate `clinvar_EOC_genes_pathogenic.vcf.gz`
+
+## Pending Step: dbSNP Integration
+
+**Decision**: Choose one or both of the following next steps:
+
+**Option A**: *Filter out known/common dbSNPs* from ClinVar pathogenic calls
+
+* **Rationale**: Prioritize potentially novel risk alleles
+* **Tool**: `bcftools isec` or `bcftools view -T ^regions.bed`
+
+**Option B**: *Annotate variants with dbSNP rsIDs*
+
+* **Rationale**: Retain all variants, but append rsID metadata
+* **Tool**: `bcftools annotate -a GCF_000001405.25.gz -c ID`
+
+---
+
+## Next Action
+
+Confirm intended route (filtering vs annotation) and generate respective `bcftools` command line expression. Proceed to logging output schema and verifying successful integration.
