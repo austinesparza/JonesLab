@@ -1,0 +1,81 @@
+JonesLab/dbSNP_variant_extraction_GRCh37
+Purpose
+This repository documents a functional pipeline for extracting germline variant data (e.g. BRCA1) from the full dbSNP dataset using GRCh37-aligned coordinates and harmonized BED inputs. This is part of a broader effort to identify cancer-relevant variants across ovarian cancer risk genes.
+
+File Structure (Confirmed as of Working Run)
+
+Copy code
+JonesLab/
+├── dbsnp/
+│   ├── GCF_000001405.25.gz
+│   ├── GCF_000001405.25.gz.tbi
+│   ├── dbsnp_risk_genes.vcf.gz
+│   ├── dbsnp_risk_genes.vcf.gz.csi
+│   └── extract_rsIDs_from_dbsnp.sh
+├── longest_isoforms.bed               # Original UCSC export with 'chr' prefixes
+├── longest_isoforms_std.bed           # Cleaned BED with 'chr' removed to match dbSNP contig naming
+├── results/
+│   └── preview_BRCA1_variants.txt
+Format Standardization Note
+The dbSNP VCF (GCF_000001405.25.gz) uses RefSeq-style contig names (e.g. NC_000017.10 for chromosome 17), not UCSC-style names (chr17). To avoid bcftools region query failures, any UCSC BED file must be cleaned to remove chr prefixes.
+
+bash
+# Standardize BED for dbSNP input
+sed 's/^chr//' longest_isoforms.bed > longest_isoforms_std.bed
+Target Coordinates
+Gene: BRCA1
+
+Build: GRCh37
+
+Contig: NC_000017.10
+
+Range: 43044294-43170245 (longest isoform)
+
+Source: UCSC Genome Browser (lifted to GRCh37)
+
+Software Requirements
+bcftools
+
+tabix
+
+bgzip (if re-compressing VCFs after edits)
+
+Step-by-Step Workflow
+1. View available contigs to confirm naming conventions
+bash
+Copy code
+bcftools view -h dbsnp/GCF_000001405.25.gz | grep "^##contig"
+2. Extract BRCA1-specific region using standardized coordinate range
+bash
+Copy code
+bcftools view -r NC_000017.10:43044294-43170245 -H \
+  dbsnp/GCF_000001405.25.gz > dbsnp/dbsnp_risk_genes.vcf
+3. Index the result (optional for downstream tools)
+bash
+Copy code
+bgzip dbsnp/dbsnp_risk_genes.vcf
+bcftools index dbsnp/dbsnp_risk_genes.vcf.gz
+4. Preview extracted variants
+bash
+Copy code
+head dbsnp/dbsnp_risk_genes.vcf > results/preview_BRCA1_variants.txt
+Shell Script Version
+Save the following as dbsnp/extract_rsIDs_from_dbsnp.sh:
+
+bash
+#!/bin/bash
+
+# Input dbSNP file
+VCF="dbsnp/GCF_000001405.25.gz"
+
+# Output
+OUT="dbsnp/dbsnp_risk_genes.vcf"
+
+# Region (GRCh37, RefSeq contig for BRCA1)
+REGION="NC_000017.10:43044294-43170245"
+
+# Extract
+bcftools view -r $REGION -H $VCF > $OUT
+
+# Optional: Preview
+head $OUT > results/preview_BRCA1_variants.txt
