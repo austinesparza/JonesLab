@@ -1,0 +1,171 @@
+### ClinVar–dbSNP Variant Matching (GRCh37, Longest Isoform Coordinates)
+
+To complete Task iii — matching dbSNP and ClinVar entries by exact genomic coordinates, reference, and alternate allele — we implemented a structured three-part workflow:
+
+---
+
+#### 1. ClinVar Pathogenic Variant Extraction
+
+Subset ClinVar (GRCh37) to longest isoform regions for eight ovarian cancer risk genes:
+
+```bash
+bcftools view -R longest_isoforms_std.bed clinvar.vcf.gz -Oz -o clinvar_EOC_genes.vcf.gz
+
+## Filter for entries annotated with any pathogenic significance (Pathogenic, Likely_pathogenic, or Pathogenic/Likely_pathogenic):
+
+bcftools view -i 'INFO/CLNSIG~"Pathogenic"' clinvar_EOC_genes.vcf.gz -Oz -o clinvar_EOC_genes_pathogenic.vcf.gz
+
+## Generate counts of all clinical significance labels per gene:
+
+bcftools view -r <chr:start-end> clinvar_EOC_genes.vcf.gz | \
+  grep -v '^#' | cut -f8 | tr ';' '\n' | grep '^CLNSIG=' | \
+  cut -d= -f2 | sort | uniq -c | sort -nr
+
+### 2. dbSNP Variant Extraction by Region
+Using BED files for each gene (e.g. BRCA1.bed, BRCA2.bed, etc.), extract dbSNP entries per region:
+
+for GENE in BRCA1 BRCA2 BRIP1 PALB2 RAD51C RAD51D ATM CHEK2; do
+  bcftools view -R ${GENE}.bed GCF_000001405.25.gz -Oz -o dbsnp_${GENE}.vcf.gz
+  bcftools index dbsnp_${GENE}.vcf.gz
+done
+
+## Generate total variant counts per gene:
+
+for file in dbsnp_*.vcf.gz; do
+  gene=$(echo $file | cut -d'_' -f2 | cut -d'.' -f1)
+  count=$(bcftools view -H "$file" | wc -l)
+  echo -e "${gene}\t${count}"
+done > dbsnp_variant_counts.tsv
+
+
+### 3. Match Variants by CHROM, POS, REF, ALT (Exact Match Only)
+Extract CHROM, POS, REF, ALT from dbSNP per gene:
+
+for GENE in BRCA1 BRCA2 BRIP1 PALB2 RAD51C RAD51D ATM CHEK2; do
+  bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' dbsnp_${GENE}.vcf.gz > dbsnp_${GENE}_coords.tsv
+done
+
+## Match against filtered ClinVar pathogenic variants:
+
+for GENE in BRCA1 BRCA2 BRIP1 PALB2 RAD51C RAD51D ATM CHEK2; do
+  bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n' clinvar_EOC_genes_pathogenic.vcf.gz | \
+    grep -Ff dbsnp_${GENE}_coords.tsv > clinvar_${GENE}_coordmatch.tsv
+done
+
+
+## Count exact coordinate matches per gene:
+
+for file in clinvar_*_coordmatch.tsv; do
+  gene=$(echo $file | cut -d'_' -f2)
+  count=$(wc -l < "$file")
+  echo -e "${gene}\t${count}"
+done > coordmatch_counts.tsv
+
+### OUTCOMES!
+
+### Variant Significance Counts per EOC Gene (GRCh37, Longest Isoform)
+
+| Gene   | Pathogenic | Likely Pathogenic | Pathogenic/Likely Pathogenic | Uncertain Significance | Likely Benign | Benign | Benign/Likely Benign | Conflicting Classifications | Other                                           | Total |
+|--------|------------|-------------------|-------------------------------|-------------------------|---------------|--------|-----------------------|-----------------------------|--------------------------------------------------|--------|
+| BRCA1  | 0          | 0                 | 0                             | 59                      | 2             | 0      | 0                     | 0                           | 0                                                | 61     |
+| BRCA2  | 4660       | 299               | 334                           | 5177                    | 3887          | 714    | 99                    | 4282                        | 24 (not_provided)                                 | 19452  |
+| BRIP1  | 540        | 186               | 151                           | 2902                    | 1021          | 134    | 583                   | 377                         | 1 (not_provided)                                  | 5894   |
+| PALB2  | 968        | 148               | 241                           | 2686                    | 863           | 151    | 578                   | 622                         | 2 (no_classification_for_the_single_variant)     | 6257   |
+| RAD51C | 153        | 68                | 74                            | 932                     | 394           | 62     | 204                   | 215                         | 0                                                | 2102   |
+| RAD51D | 111        | 77                | 44                            | 884                     | 428           | 66     | 196                   | 181                         | 0                                                | 1987   |
+| ATM    | 864        | 242               | 272                           | 3097                    | 1323          | 194    | 517                   | 452                         | 1 (not_provided)                                  | 6961   |
+| CHEK2  | 230        | 52                | 41                            | 684                     | 178           | 29     | 94                    | 66                          | 1 (Conflicting_classifications_of_pathogenicity) | 1374   |
+| **Sum**| **7526**   | **1072**          | **1157**                      | **16421**               | **8096**       | **1350**| **2271**              | **6195**                    |                                                  |        |
+
+
+### dbSNP Variant Counts by Gene (GRCh37, Longest Isoform Regions)
+
+| Gene   | dbSNP_Total |
+|--------|-------------|
+| ATM    | 68,718      |
+| BRCA1  | 52,906      |
+| BRCA2  | 44,127      |
+| BRIP1  | 66,759      |
+| CHEK2  | 6,450       |
+| PALB2  | 19,163      |
+| RAD51C | 18,795      |
+| RAD51D | 42,880      |
+
+
+### Matched Pathogenic ClinVar Variants to dbSNP (Exact CHROM, POS, REF, ALT)
+
+Matched by strict coordinate and allele identity for ovarian cancer risk genes under GRCh37.
+
+| Gene   | Matched Variants |
+|--------|------------------|
+| ATM    | 574              |
+| BRCA1  | 0                |
+| BRCA2  | 2,885            |
+| BRIP1  | 379              |
+| CHEK2  | 159              |
+| PALB2  | 706              |
+| RAD51C | 115              |
+| RAD51D | 85               |
+
+
+### Supplement: Matching Logic, Pathogenicity Filters, and Reference Consistency
+This section supplements the variant matching workflow with clarifying detail regarding input file definitions, filtering logic, and representation caveats. All steps below assume GRCh37 build alignment.
+
+## Reference Data Sources
+clinvar.vcf.gz downloaded from NCBI ClinVar FTP on 2025-06-15
+(https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh37/)
+
+GCF_000001405.25.gz (dbSNP VCF) downloaded from NCBI RefSeq FTP
+(https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.25_GRCh37.p13/)
+
+All files are bgzip compressed and tabix indexed for compatibility with bcftools.
+
+BED Input Definition
+The file longest_isoforms_std.bed defines the genomic coordinates for the longest protein-coding isoform of each ovarian cancer risk gene under GRCh37. This file was derived from the UCSC Genome Browser using the GENCODE v19 comprehensive gene set.
+
+All entries are 0-based, half-open intervals
+
+UCSC chr prefixes were removed to match dbSNP contig naming (e.g. 17 not chr17)
+
+BED file structure (example):
+17    43044294    43170245    BRCA1
+
+## ClinVar Pathogenicity Filtering
+Variants were retained if the CLNSIG field matched any of the following terms:
+
+Pathogenic
+
+Likely_pathogenic
+
+Pathogenic/Likely_pathogenic
+
+Multi-valued or compound CLNSIG annotations (e.g. CLNSIG=Pathogenic|Benign) were included if any entry matched.
+
+## Filtered command:
+
+bcftools view -i 'INFO/CLNSIG~"Pathogenic"' clinvar_EOC_genes.vcf.gz -Oz -o clinvar_EOC_genes_pathogenic.vcf.gz
+Matching Methodology
+Variant matching was based on strict identity at four fields:
+
+Chromosome (CHROM)
+
+Position (POS)
+
+Reference allele (REF)
+
+Alternate allele (ALT)
+
+Only exact matches were accepted. No variant normalization (e.g. left-alignment) or equivalence mapping (e.g. rsID reconciliation) was performed.
+
+This was implemented using bcftools query followed by grep -Ff for each gene-specific variant set.
+
+No attempt was made to harmonize different representations of equivalent variants. Insertions and deletions may be missed if represented differently in ClinVar and dbSNP.
+
+## Tool Versions
+bcftools 1.19
+htslib 1.19
+
+tabix and bgzip from the same release suite
+
+## Output File Integrity
+All final .vcf.gz and .tsv outputs were manually checked for completeness and file index synchronization.
