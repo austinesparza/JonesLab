@@ -4,7 +4,7 @@ This repository documents a functional pipeline for extracting germline variant 
 
 File Structure (Confirmed as of Working Run)
 
-Copy code
+
 JonesLab/
 ├── dbsnp/
 │   ├── GCF_000001405.25.gz
@@ -19,7 +19,7 @@ JonesLab/
 Format Standardization Note
 The dbSNP VCF (GCF_000001405.25.gz) uses RefSeq-style contig names (e.g. NC_000017.10 for chromosome 17), not UCSC-style names (chr17). To avoid bcftools region query failures, any UCSC BED file must be cleaned to remove chr prefixes.
 
-bash
+
 # Standardize BED for dbSNP input
 sed 's/^chr//' longest_isoforms.bed > longest_isoforms_std.bed
 Target Coordinates
@@ -51,18 +51,15 @@ Copy code
 bcftools view -r NC_000017.10:43044294-43170245 -H \
   dbsnp/GCF_000001405.25.gz > dbsnp/dbsnp_risk_genes.vcf
 3. Index the result (optional for downstream tools)
-bash
-Copy code
+
 bgzip dbsnp/dbsnp_risk_genes.vcf
 bcftools index dbsnp/dbsnp_risk_genes.vcf.gz
 4. Preview extracted variants
 bash
-Copy code
 head dbsnp/dbsnp_risk_genes.vcf > results/preview_BRCA1_variants.txt
-Shell Script Version
+
 Save the following as dbsnp/extract_rsIDs_from_dbsnp.sh:
 
-bash
 #!/bin/bash
 
 # Input dbSNP file
