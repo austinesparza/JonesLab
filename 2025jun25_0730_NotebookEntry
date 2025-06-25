@@ -1,0 +1,100 @@
+# dbSNP Region-Specific Extraction Workflow
+
+## Project Context
+
+**Objective**: This section documents the extraction of dbSNP variant records corresponding to 8 ovarian cancer (OC) risk genes using GRCh37 RefSeq contig coordinates. This subsetted data supports downstream comparison with ClinVar entries and facilitates exploration of variant presence, rsID assignment, and potential signal enrichment within intronic and coding intervals.
+
+## Reference Datasets
+
+### dbSNP (GRCh37, RefSeq 37.13 / likely build 151)
+
+| File                          | Description                                       |
+| ----------------------------- | ------------------------------------------------- |
+| `GCF_000001405.25.gz`         | dbSNP reference VCF file (GRCh37)                |
+| `GCF_000001405.25.gz.tbi`     | Tabix index for fast region-based extraction     |
+
+### Gene Coordinate Source (Internal)
+
+| Source                                   | Description                                      |
+| ---------------------------------------- | ------------------------------------------------ |
+| Hardcoded within script (associative map) | 8 OC risk genes with GRCh37 RefSeq contig ranges |
+
+## Computing Environment
+
+**Machine**: MacBook Pro (M1 chip)  
+**macOS Version**: Sequoia 15.3.1 (24D70)  
+**Working directory**: `~/Downloads/JonesLab/dbsnp/`  
+**Script location**: `~/Downloads/JonesLab/scripts/`
+
+### Installed Software
+
+| Tool       | Version | Function                            |
+| ---------- | ------- | ----------------------------------- |
+| `bcftools` | 1.22    | Region-based VCF filtering          |
+| `htslib`   | 1.22    | Core support library for I/O        |
+| `tabix`    | bundled | Indexing and querying VCFs          |
+| `bash`     | 5.2.21  | Required for associative array use  |
+
+## Completed Steps
+
+1. **Script Creation**:
+
+   * Script: `extract_dbsnp_by_gene_GRCh37_2025jun24_v01.sh`
+   * Input: dbSNP VCF and gene:region mapping
+   * Each gene region was extracted using:
+
+     ```bash
+     bcftools view -r NC_000017.10:43044294-43170245 -Oz -o dbsnp_BRCA1.vcf.gz GCF_000001405.25.gz
+     ```
+
+   * All gene intervals were stored as key-value pairs in a Bash associative array and processed in a loop.
+
+2. **VCF to TSV Conversion**:
+
+   * Used `bcftools query` to export structured tab-delimited files:
+
+     ```bash
+     bcftools query -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%INFO\n' dbsnp_BRCA1.vcf.gz > dbsnp_BRCA1.tsv
+     ```
+
+   * Output files were named consistently using the format:
+
+     ```
+     dbsnp_<GENE>.vcf.gz
+     dbsnp_<GENE>.tsv
+     ```
+
+3. **Warnings Encountered**:
+
+   * bcftools issued warnings of the form:
+
+     ```
+     [W::vcf_parse_info] Extreme INFO/RS value encountered and set to missing at NC_000017.10:43044297
+     ```
+
+   * These reflect malformed or missing `RS=` field values within the `INFO` column, but **do not impact the `ID` (third column) which retains the rsID**.
+   * No filtering or suppression was necessary, but may be considered if batch processing logs are required to be clean.
+
+4. **Verification of Output**:
+
+   * Confirmed correct entries using:
+
+     ```bash
+     bcftools view -H dbsnp_BRCA1.vcf.gz | head
+     head -n 5 dbsnp_BRCA1.tsv
+     ```
+
+   * Validated presence of specific position-based variants:
+
+     ```bash
+     grep 43044297 dbsnp_BRCA1.tsv
+     ```
+
+## Next Action
+
+Incorporate these dbSNP subsets into ClinVar annotation and filtering workflows. Proceed to either:
+
+- **Annotate ClinVar variants with rsIDs using `bcftools annotate`**, or  
+- **Filter ClinVar pathogenic variants by overlap with dbSNP regions using `bcftools isec`**
+
+Confirm intended integration route and apply to previously generated ClinVar subsets.
