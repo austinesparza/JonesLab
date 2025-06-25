@@ -2,7 +2,9 @@
 
 ## Project Context
 
-**Objective**: This notebook documents the extraction, filtering, and annotation of ClinVar variants in ovarian cancer risk genes (OC risk genes) using the GRCh37 genome build. It supports a broader discovery-driven framework aimed at identifying potentially pathogenic variants in undercharacterized regions, with emphasis on structural variation and intronic signal enrichment.
+**Objective**: This notebook documents the extraction, filtering, and annotation of ClinVar and dbSNP variants in ovarian cancer risk genes (OC risk genes) using the GRCh37 genome build. It supports a broader discovery-driven framework aimed at identifying potentially pathogenic variants in undercharacterized regions, with emphasis on structural variation, germline enrichment, and rsID harmonization.
+
+---
 
 ## Reference Datasets
 
@@ -19,15 +21,20 @@
 
 ### dbSNP (GRCh37, RefSeq 37.13 / likely build 151)
 
-| File                      | Description                  |
-| ------------------------- | ---------------------------- |
-| `GCF_000001405.25.gz`     | dbSNP reference VCF (GRCh37) |
-| `GCF_000001405.25.gz.tbi` | Tabix index                  |
+| File                             | Description                                        |
+| -------------------------------- | -------------------------------------------------- |
+| `GCF_000001405.25.gz`            | dbSNP reference VCF (GRCh37, RefSeq naming)        |
+| `GCF_000001405.25.gz.tbi`        | Tabix index for dbSNP                              |
+| `dbsnp_risk_genes.vcf.gz`        | Extracted dbSNP variants for longest OC gene isoforms |
+| `dbsnp_risk_genes.vcf.gz.csi`    | CSI index for extracted subset                     |
+| `extract_rsIDs_from_dbsnp.sh`    | Script used to extract BRCA1 region from dbSNP     |
+
+---
 
 ## Computing Environment
 
-**Machine**: MacBook Pro (M1 chip)
-**macOS Version**: Sequoia 15.3.1 (24D70)
+**Machine**: MacBook Pro (M1 chip)  
+**macOS Version**: Sequoia 15.3.1 (24D70)  
 **Active working directory**: `~/Downloads/JonesLab/ClinVar_GRCh37_20250615/`
 
 ### Installed Software
@@ -39,43 +46,98 @@
 | `tabix`    | bundled | Indexing of compressed genomic data     |
 | `bgzip`    | bundled | Compression of text-based genomic files |
 
+---
+
 ## Completed Steps
 
-1. **Transcript Extraction**:
+### 1. Transcript Extraction
 
-   * Used UCSC Table Browser to export BED files for each gene using GENCODE v19 (last mapped to GRCh37).
-   * BED files were saved per gene and merged into:
-     `~/Downloads/JonesLab/BED/merged_genes_tagged.BED`
+- Used UCSC Table Browser to export BED files per gene from GENCODE v19 (GRCh37-mapped).
+- Merged BEDs into `merged_genes_tagged.BED`.
 
-2. **Isoform Selection**:
+### 2. Isoform Selection
 
-   * Longest transcript for each gene determined by genomic span (end-start) using:
+- Determined longest isoform for each gene by genomic span:
+  ```bash
+  awk '{print $4, $3 - $2}' GENE_transcript_full.BED | sort -k2,2nr | head
+  ```
 
-     ```bash
-     awk '{print $4, $3 - $2}' GENE_transcript_full.BED | sort -k2,2nr | head
-     ```
+### 3. ClinVar Filtering
 
-3. **ClinVar Filtering**:
+- Subsetted ClinVar to genes of interest using:
+  ```bash
+  bcftools view -R genes_of_interest_GRCh37_regions.txt -Oz -o clinvar_EOC_genes.vcf.gz clinvar.vcf.gz
+  ```
+- Filtered to pathogenic variants with:
+  ```bash
+  bcftools view -i 'CLNSIG~"pathogenic"' -Oz -o clinvar_EOC_genes_pathogenic.vcf.gz clinvar_EOC_genes.vcf.gz
+  ```
 
-   * Subsetted `clinvar.vcf.gz` by merged BED to produce `clinvar_EOC_genes.vcf.gz`
-   * Filtered pathogenic variants to generate `clinvar_EOC_genes_pathogenic.vcf.gz`
+### 4. dbSNP Region-Specific Extraction
 
-## Pending Step: dbSNP Integration
+- Standardized UCSC BED files to match RefSeq contig naming:
+  ```bash
+  sed 's/^chr//' longest_isoforms.bed > longest_isoforms_std.bed
+  ```
+- Extracted BRCA1 region from dbSNP using:
+  ```bash
+  bcftools view -r NC_000017.10:43044294-43170245 -H dbsnp/GCF_000001405.25.gz > dbsnp/dbsnp_risk_genes.vcf
+  ```
+- Compressed and indexed result:
+  ```bash
+  bgzip dbsnp/dbsnp_risk_genes.vcf
+  bcftools index dbsnp/dbsnp_risk_genes.vcf.gz
+  ```
+- Previewed extracted variants:
+  ```bash
+  head dbsnp/dbsnp_risk_genes.vcf > results/preview_BRCA1_variants.txt
+  ```
 
-**Decision**: Choose one or both of the following next steps:
+> ✅ Extracted region uses GRCh37 RefSeq contig `NC_000017.10`, not `chr17`.
 
-**Option A**: *Filter out known/common dbSNPs* from ClinVar pathogenic calls
+---
 
-* **Rationale**: Prioritize potentially novel risk alleles
-* **Tool**: `bcftools isec` or `bcftools view -T ^regions.bed`
+## Pending Step: dbSNP Integration with ClinVar
 
-**Option B**: *Annotate variants with dbSNP rsIDs*
+**Decision Point**: Choose one or both of the following next steps.
 
-* **Rationale**: Retain all variants, but append rsID metadata
-* **Tool**: `bcftools annotate -a GCF_000001405.25.gz -c ID`
+### Option A: Filter out known/common dbSNPs from ClinVar
+
+- **Rationale**: Prioritize novel/rare alleles for discovery.
+- **Tool**: `bcftools isec` or `bcftools view -T ^regions.bed`
+
+### Option B: Annotate ClinVar calls with dbSNP rsIDs
+
+- **Rationale**: Harmonize IDs for cross-database matching.
+- **Tool**: `bcftools annotate -a GCF_000001405.25.gz -c ID`
+
+---
+
+## Extraction Script (Reproducible)
+
+`dbsnp/extract_rsIDs_from_dbsnp.sh`:
+
+```bash
+#!/bin/bash
+
+# Input dbSNP file
+VCF="dbsnp/GCF_000001405.25.gz"
+
+# Output
+OUT="dbsnp/dbsnp_risk_genes.vcf"
+
+# Region (GRCh37, RefSeq contig for BRCA1)
+REGION="NC_000017.10:43044294-43170245"
+
+# Extract
+bcftools view -r $REGION -H $VCF > $OUT
+
+# Optional: Preview
+head $OUT > results/preview_BRCA1_variants.txt
+```
 
 ---
 
 ## Next Action
 
-Confirm intended route (filtering vs annotation) and generate respective `bcftools` command line expression. Proceed to logging output schema and verifying successful integration.
+Confirm whether to annotate or filter rsIDs and execute integration using the selected `bcftools` command. Then validate metadata fields (`INFO/RS`, `ID`, etc.) and log any annotation failures or contig mismatches for debugging.
