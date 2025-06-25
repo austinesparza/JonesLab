@@ -1,0 +1,87 @@
+# ClinVar Clinical Significance Summary by Gene (GRCh37)
+# Extraction based on: longest_isoforms_std.bed
+# Input VCF: clinvar_EOC_genes.vcf.gz
+# Tool: bcftools v1.22
+# Command Template:
+# bcftools view -r <chr:start-end> clinvar_EOC_genes.vcf.gz | \
+#   grep -v '^#' | cut -f8 | tr ';' '\n' | grep '^CLNSIG=' | \
+#   cut -d= -f2 | sort | uniq -c | sort -nr
+
+BRCA1 (chr17:43044294-43170245)
+  59 Uncertain_significance
+   2 Likely_benign
+
+BRCA2 (chr13:32890597-32972907)
+ 5177 Conflicting_classifications_of_pathogenicity
+ 4660 Pathogenic
+ 4282 Uncertain_significance
+ 3887 Likely_benign
+  714 Benign
+  334 Pathogenic/Likely_pathogenic
+  299 Likely_pathogenic
+   99 Benign/Likely_benign
+   24 not_provided
+
+BRIP1 (chr17:59760656-59938900)
+ 2902 Uncertain_significance
+ 1021 Likely_benign
+  583 Benign/Likely_benign
+  540 Pathogenic
+  377 Conflicting_classifications_of_pathogenicity
+  186 Likely_pathogenic
+  151 Pathogenic/Likely_pathogenic
+  134 Benign
+    1 not_provided
+
+PALB2 (chr16:23614779-23652478)
+ 2686 Uncertain_significance
+  968 Pathogenic
+  863 Likely_benign
+  622 Conflicting_classifications_of_pathogenicity
+  578 Benign/Likely_benign
+  241 Pathogenic/Likely_pathogenic
+  151 Benign
+  148 Likely_pathogenic
+    2 no_classification_for_the_single_variant
+
+RAD51C (chr17:56770004-56811583)
+  932 Uncertain_significance
+  394 Likely_benign
+  215 Conflicting_classifications_of_pathogenicity
+  204 Benign/Likely_benign
+  153 Pathogenic
+   74 Pathogenic/Likely_pathogenic
+   68 Likely_pathogenic
+   62 Benign
+
+RAD51D (chr17:33338986-33448312)
+  884 Uncertain_significance
+  428 Likely_benign
+  196 Benign/Likely_benign
+  181 Conflicting_classifications_of_pathogenicity
+  111 Pathogenic
+   77 Likely_pathogenic
+   66 Benign
+   44 Pathogenic/Likely_pathogenic
+
+ATM (chr11:108179697-108332286)
+ 3097 Uncertain_significance
+ 1323 Likely_benign
+  864 Pathogenic
+  517 Benign/Likely_benign
+  452 Conflicting_classifications_of_pathogenicity
+  272 Pathogenic/Likely_pathogenic
+  242 Likely_pathogenic
+  194 Benign
+    1 not_provided
+
+CHEK2 (chr22:29117587-29130709)
+  684 Uncertain_significance
+  230 Pathogenic
+  178 Likely_benign
+   94 Benign/Likely_benign
+   66 Conflicting_classifications_of_pathogenicity
+   52 Likely_pathogenic
+   41 Pathogenic/Likely_pathogenic
+   29 Benign
+    1 Conflicting_classifications_of_pathogenicity|risk_factor
