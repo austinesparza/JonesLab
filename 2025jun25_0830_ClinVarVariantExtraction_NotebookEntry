@@ -1,0 +1,62 @@
+# ClinVar Variant Extraction – EOC Gene Regions (GRCh37)
+
+**Author:** Austin Esparza  
+**Date:** 2025-06-25  
+**Dataset:** ClinVar GRCh37  
+**Working Directory:** `/Users/austinesparza/Downloads/JonesLab/ClinVar_GRCh37_20250615`
+
+## Objective
+
+Extract ClinVar variants overlapping predefined genomic coordinates for ovarian cancer (EOC) risk genes. Coordinates are defined by the longest transcript span per gene, exported from UCSC Table Browser using GENCODE v19 annotations (GRCh37/hg19). The result will serve as the ClinVar input for downstream filtering, annotation, and comparison with dbSNP.
+
+## Input Files
+
+- `clinvar.vcf.gz`: Full ClinVar GRCh37 variant dataset (source: NCBI)
+- `genes_of_interest_GRCh37_regions.txt`: UCSC BED-format gene regions with `chr` prefixes
+- `genes_of_interest_nochr.bed`: Standardized BED file with `chr` prefix removed (created below)
+
+## Methods
+
+### Step 1: Standardize chromosome format in BED
+
+```bash
+cut -f1-3 /Users/austinesparza/Downloads/JonesLab/ClinVar_GRCh37_20250615/genes_of_interest_GRCh37_regions.txt \
+  | sed 's/^chr//' \
+  > /Users/austinesparza/Downloads/JonesLab/ClinVar_GRCh37_20250615/genes_of_interest_nochr.bed
+```
+
+### Step 2: Extract ClinVar records overlapping target regions
+
+```bash
+bcftools view -R /Users/austinesparza/Downloads/JonesLab/ClinVar_GRCh37_20250615/genes_of_interest_nochr.bed \
+  -Oz -o /Users/austinesparza/Downloads/JonesLab/ClinVar_GRCh37_20250615/clinvar_EOC_genes.vcf.gz \
+  /Users/austinesparza/Downloads/JonesLab/ClinVar_GRCh37_20250615/clinvar.vcf.gz
+```
+
+### Step 3: Index the resulting VCF
+
+```bash
+bcftools index /Users/austinesparza/Downloads/JonesLab/ClinVar_GRCh37_20250615/clinvar_EOC_genes.vcf.gz
+```
+
+### Step 4: Confirm record count
+
+```bash
+bcftools view -H /Users/austinesparza/Downloads/JonesLab/ClinVar_GRCh37_20250615/clinvar_EOC_genes.vcf.gz | wc -l
+```
+
+Expected output:
+```
+44130
+```
+
+## Notes
+
+- ClinVar GRCh37 contigs use numeric labels (`1`, `2`, ..., `X`, `Y`, `MT`) without `chr` prefixes.
+- All extractions are done using `bcftools v1.22`, with output VCFs compressed and indexed using `bgzip` and `tabix`.
+- Downstream steps will filter this dataset for `CLNSIG ~ "Pathogenic"` and annotate rsIDs using `dbSNP`.
+
+## Status
+
+✅ Completed: Region-based ClinVar extraction for 8 target genes.  
+Next step: Filter pathogenic variants and integrate with dbSNP annotations.
