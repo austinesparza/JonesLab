@@ -1,0 +1,65 @@
+## BRCA1 ClinVar/dbSNP Coordinate Harmonization (2025jul01)
+
+This archived workflow successfully harmonizes BRCA1 variant records between ClinVar and dbSNP using standardized contig naming and a coordinate-based join. By normalizing contig identifiers (e.g., chr17 and NC_000017.10 to 17) and joining on exact CHROM:POS, we identified 23,533 overlapping variants based solely on genomic position.
+
+### Workflow Summary
+
+```bash
+# 1. Extract and standardize ClinVar coordinates (chr17 to 17)
+bcftools view -H data_processed/clinvar/AEsparza_JonesLab_ClinVar_BRCA1_GRCh37_RefSeqChrs_2025jul01_v.01.vcf.gz \
+  | awk 'BEGIN{OFS="\t"} {{$1=($1=="chr17" ? "17" : $1); print $1":"$2, $0}}' \
+  | sort -k1,1 > tmp/BRCA1_ClinVar_CoordIndex.tsv
+
+# 2. Extract and standardize dbSNP coordinates (NC_000017.10 to 17)
+bcftools view -H data_processed/dbsnp/AEsparza_JonesLab_dbSNP_BRCA1_GRCh37_2025jul01_v.01.vcf.gz \
+  | awk 'BEGIN{OFS="\t"} {{sub(/^NC_000017.10$/, "17", $1); print $1":"$2, $0}}' \
+  | sort -k1,1 > tmp/BRCA1_dbSNP_CoordIndex.tsv
+
+# 3. Join ClinVar and dbSNP by CHROM:POS key
+join -t $'\t' -1 1 -2 1 tmp/BRCA1_ClinVar_CoordIndex.tsv tmp/BRCA1_dbSNP_CoordIndex.tsv \
+  > tmp/BRCA1_CoordMatch_ClinVar_dbSNP_2025jul01.tsv
+
+# 4. Confirm number of matched records
+wc -l tmp/BRCA1_CoordMatch_ClinVar_dbSNP_2025jul01.tsv
+# Output: 23,533 overlapping variants
+```
+
+### Rationale and Next Steps
+
+This harmonized coordinate index enables downstream cross-referencing of ClinVar and dbSNP records for a range of analytical goals:
+
+| Objective                     | Purpose                                                                 |
+|------------------------------|-------------------------------------------------------------------------|
+| rsID Concordance             | Identify variants with matching identifiers across both datasets        |
+| rsID Discordance             | Detect conflicts or missing IDs for normalization and cleanup           |
+| Structural Array Validation  | Confirm which variants are represented on genotyping arrays             |
+| Clinical Annotation Support  | Reinforce or challenge pathogenicity designations via cross-source agreement |
+| Novel Variant Discovery      | Investigate unmatched positions for potential new findings               |
+
+### Possible Next Steps:
+
+**Option 1: Generalize to Full EOC Gene Panel**  
+Apply the same coordinate harmonization strategy to all 8 ovarian cancer risk genes:
+- Normalize contigs
+- Index by CHROM:POS
+- Join and output results  
+
+**Output Format:**  
+tmp/${GENE}_CoordMatch_ClinVar_dbSNP_2025jul01.tsv
+
+**Option 2: rsID Concordance Classification**  
+Parse the joined result to categorize by identifier agreement:
+- Matching rsIDs  
+- ClinVar-only rsIDs  
+- dbSNP-only rsIDs  
+- Missing in both (i.e., ".")  
+
+**Output:**  
+results/BRCA1_rsID_concordance_summary_2025jul01.tsv
+
+**Option 3: Final Harmonized Variant Table**  
+Construct a merged table with key fields for downstream interpretation or array compatibility checks:
+- CHROM, POS, REF, ALT, rsID_ClinVar, rsID_dbSNP, CLNSIG, etc.
+
+**Output:**  
+results/BRCA1_HarmonizedVariantTable_2025jul01.tsv
