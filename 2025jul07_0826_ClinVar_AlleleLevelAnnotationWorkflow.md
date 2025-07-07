@@ -9,6 +9,15 @@
 Annotate Infinium Global Diversity Array variants with allele-specific ClinVar data (June 2025 release) and produce a compressed, indexed VCF suitable for downstream analyses. Exact matches on `CHROM | POS | REF | ALT` eliminate earlier mis-annotations caused by position-only matching.
 
 ---
+## Software Versions
+
+| Tool        | Version Tested     |
+|-------------|--------------------|
+| bcftools    | 1.20               |
+| tabix       | 1.20 (via htslib)  |
+| awk         | BSD/macOS default  |
+| bash        | 5.x+               |
+
 
 ## Input Files
 
@@ -27,6 +36,10 @@ Annotate Infinium Global Diversity Array variants with allele-specific ClinVar d
 ---
 
 ## Step-by-Step Solution
+
+# Extract and sanitize header from array-derived VCF to correct invalid tags and define missing fields.
+> **Note:** bcftools annotate requires exact `CHROM, POS, REF, ALT` matches to transfer INFO fields. This eliminates spurious assignments caused by rsID or position-only matches.
+
 
 ### 1. Extract Original Header
 ```bash
@@ -64,6 +77,12 @@ bcftools query \
 # Compress and index TSV
 bgzip -f clinvar_20250630_allele_level_annotations.tsv
 tabix -s1 -b2 -e2 clinvar_20250630_allele_level_annotations.tsv.gz
+
+# Sort and reformat TSV for annotation compatibility
+bcftools sort -t $'\t' -k1,1 -k2,2n clinvar_20250630_allele_level_annotations.tsv \
+  | bgzip -c > clinvar_20250630_allele_level_annotations_clean.tsv.gz
+tabix -s1 -b2 -e2 clinvar_20250630_allele_level_annotations_clean.tsv.gz
+
 
 ### 6. Annotate Array VCF
 bcftools annotate \
@@ -140,3 +159,5 @@ Reproducible Pipeline Script (Skeleton)
 # 4. bcftools annotate with allele-level ClinVar
 # 5. bgzip + tabix
 # 6. Export summary TSV + optional pathogenic filter
+
+md5sum AEsparza_JonesLab_ArrayAnnotated_2025jul07_v.13.vcf.gz > final.md5
