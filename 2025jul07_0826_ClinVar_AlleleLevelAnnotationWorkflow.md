@@ -74,6 +74,11 @@ bcftools query \
   clinvar_20250630_corefields.vcf.gz \
   > clinvar_20250630_allele_level_annotations.tsv
 
+sort -k1,1 -k2,2n clinvar_20250630_allele_level_annotations.tsv \
+  | bgzip -c > clinvar_20250630_allele_level_annotations_clean.tsv.gz
+tabix -s1 -b2 -e2 clinvar_20250630_allele_level_annotations_clean.tsv.gz
+
+
 # Compress and index TSV
 bgzip -f clinvar_20250630_allele_level_annotations.tsv
 tabix -s1 -b2 -e2 clinvar_20250630_allele_level_annotations.tsv.gz
