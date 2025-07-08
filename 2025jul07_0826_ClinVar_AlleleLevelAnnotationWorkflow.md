@@ -120,10 +120,22 @@ bcftools view -H AEsparza_JonesLab_ArrayAnnotated_2025jul07_v.13.vcf.gz \
 ### QC Results
 Total variants in array VCF: 3 931
 
+### ClinVar Clinical Significance Breakdown (Array-Matched Variants)
+
+| Clinical Significance                         | Count |
+|-----------------------------------------------|-------|
+| Benign                                        | 41    |
+| Conflicting classifications of pathogenicity  | 12    |
+| Benign/Likely benign                          | 9     |
+| Likely benign                                 | 3     |
+| Pathogenic                                    | 2     |
+| Pathogenic/Likely pathogenic                  | 1     |
+
 Variants with ClinVar allele-level annotation: 68 (≈ 1.7 %)
 – reflects strict allele matching on a population genotyping array.
 
 No header or contig parsing errors remain.
+
 
 ### Proposed Next Actions
 Optional filtering (pathogenic-only):
