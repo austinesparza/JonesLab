@@ -187,3 +187,31 @@ clinsig_by_rsid <- matched_chr_pos_id %>%
 
 ---
 
+## Workflow Skeleton
+1) Index ClinVar VCF
+Enable random access with tabix.
+
+2) Subset ClinVar VCF
+Restrict to chromosomes 13, 14, 16, and 17 using bcftools view.
+
+3) Extract Key Fields from ClinVar
+Use bcftools query to pull CHROM, POS, REF, ALT, RSID, and CLNSIG.
+
+4) Load & Normalize ClinVar Data (R)
+Read the extracted TSV, clean and reformat RSIDs, keep core fields.
+
+5) Load & Normalize dbSNP Array Data (R)
+Read cleaned dbSNP list, standardize CHROM, POS, and rsID columns.
+
+6) Join ClinVar and dbSNP by CHROM, POS, rsID (R)
+Use inner_join() to match variants present in both datasets.
+
+7) Export Final Harmonized Table (R)
+Save the matched set for downstream use (.tsv format).
+
+8) Summarize Clinical Significance (R)
+Generate frequency tables by CLNSIG category:
+
+9) Total annotations
+
+10) Unique rsIDs per category
