@@ -238,8 +238,7 @@ n_total            <- nrow(rsid_summary_pos)                # 3931
 
 ## Interpretation
 
-This analysis provides a resolution-aware classification of clinical significance across variant sites. It confirms that a majority (57%) of evaluated variant sites are unambiguously labeled `Pathogenic`, while the remaining 43% exhibit interpretive conflicts or ambiguity. These findings reinforce the importance of context-aware annotation logic and support conservative downstream filtering when clinical confidence is critical.
-
+This analysis characterizes clinical significance consistency at the variant-site level. It shows that over half (57%) of evaluated sites are exclusively annotated as Pathogenic, while the remaining 43% display variation in interpretation. These results highlight the relevance of using site-level resolution for annotation review and suggest that stricter filtering may be warranted in workflows where clinical confidence is a priority.
 ---
 
 
