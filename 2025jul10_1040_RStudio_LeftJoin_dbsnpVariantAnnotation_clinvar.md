@@ -155,7 +155,12 @@ print(clinsig_summary_unique_once)
 | Allele-level matching | `CHROM`, `POS`, `REF`, `ALT` | 68                 | Precise, allele-specific    | Fails if ALT differs in representation |
 | CHROM + POS + ID      | `CHROM`, `POS`, `ID`         | 3931 (after dedup) | Best rsID-resolution method | Requires ID normalization              |
 
+
+## Evaluation of Annotation Duplication in Joined Dataset
+
 The table below summarizes key statistics used to evaluate annotation inflation in the joined dataset. Because individual rsIDs can map to multiple ClinVar entries, the total number of matched rows can significantly exceed the number of unique variant sites. We assessed this duplication to justify the use of a deduplicated summary for accurate interpretation of clinical significance distributions.
+
+### Summary of rsID Duplication and Deduplication Metrics
 
 | Metric                                                | Value | Description                                                                                                                                                                                          |
 | ----------------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -165,10 +170,9 @@ The table below summarizes key statistics used to evaluate annotation inflation 
 | **rsIDs with multiple matched rows**                  | 1,229 | Number of rsIDs that appear more than once in the joined dataset. These entries contribute directly to the inflation of the total row count.                                                         |
 | **rsIDs with multiple distinct CLNSIG values**        | 866   | Subset of the above group. These rsIDs are linked to more than one distinct clinical significance label, indicating true interpretive variation across submissions.                                  |
 
+### Interpretation
 
 These results confirm that a substantial proportion of rsIDs (1,229) appear more than once in the joined data, with 866 of those linked to multiple clinical interpretations. Without deduplication, summary statistics would reflect repeated rows rather than unique loci, overstating annotation coverage and misrepresenting category frequencies. For this reason, we report one clinical significance label per rsID in summary tables while retaining the full joined output for downstream analyses that require allele-level detail.
-
-
 
 ---
 
