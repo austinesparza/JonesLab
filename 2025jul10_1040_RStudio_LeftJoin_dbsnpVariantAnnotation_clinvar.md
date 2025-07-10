@@ -162,7 +162,7 @@ We chose to exclude `REF` and `ALT` alleles from the join key to avoid unintende
 | CHROM + POS + ID      | `CHROM`, `POS`, `ID`         | 3931 (after dedup) | Best rsID-resolution method | Requires ID normalization              |
 
 
-## Evaluation of Annotation Duplication in Joined Dataset
+## Section 1: Evaluation of Annotation Duplication in Joined Dataset
 
 The table below summarizes key statistics used to evaluate annotation inflation in the joined dataset. Because individual rsIDs can map to multiple ClinVar entries, the total number of matched rows can significantly exceed the number of unique variant sites. We assessed this duplication to justify the use of a deduplicated summary for accurate interpretation of clinical significance distributions.
 
@@ -181,7 +181,7 @@ The table below summarizes key statistics used to evaluate annotation inflation 
 These results confirm that a substantial proportion of rsIDs (1,229) appear more than once in the joined data, with 866 of those linked to multiple clinical interpretations. Without deduplication, summary statistics would reflect repeated rows rather than unique loci, overstating annotation coverage and misrepresenting category frequencies. For this reason, we report one clinical significance label per rsID in summary tables while retaining the full joined output for downstream analyses that require allele-level detail.
 
 
-# Clinical Significance Consistency per Variant Site
+# Section 2: Clinical Significance Consistency per Variant Site
 
 ## Join Logic and Purpose
 
@@ -233,28 +233,38 @@ n_total            <- nrow(rsid_summary_pos)                # 3931
 
 ## Classification Summary Table
 
-| Category                        | Count | Description                                                                                |
-| ------------------------------- | ----- | ------------------------------------------------------------------------------------------ |
-| Strictly Pathogenic (singleton) | 2,105 | Variant sites with a single ClinVar match (one row) labeled `Pathogenic`.                  |
-| Strictly Pathogenic (multi-row) | 139   | Variant sites with multiple ClinVar entries, all consistently labeled `Pathogenic`.        |
-| Conflicted or mixed annotations | 1,687 | Variant sites with multiple distinct CLNSIG labels (e.g., `Pathogenic + Benign`, or `NA`). |
-| **Total unique variant sites**  | 3,931 | All variant sites uniquely defined by `CHROM + POS + ID`.                                  |
+| Category                                   | Count | Description                                                                                                           |
+| ------------------------------------------ | ----- | --------------------------------------------------------------------------------------------------------------------- |
+| Strictly Pathogenic (singleton)            | 2,105 | Strictly Pathogenic (singleton) sites are those with a single ClinVar match (one row), all labeled `Pathogenic`.      |
+| Strictly Pathogenic (multi-row)            | 139   | Strictly Pathogenic (multi-row) sites are those with multiple ClinVar entries, all consistently labeled `Pathogenic`. |
+| Conflicted or mixed annotations            | 1,687 | Conflicted annotations (e.g., `Pathogenic + Benign`, or `NA`).                                                        |
+| **Total variant sites (CHROM + POS + ID)** | 3,931 | All variant sites uniquely defined by `CHROM + POS + ID`.                                                             |
 
 ---
 
 ## Interpretation
 
-**This analysis characterizes clinical significance consistency at the variant-site level. It shows that over half (57%) of evaluated sites are exclusively annotated as Pathogenic, while the remaining 43% display variation in interpretation. These results highlight the relevance of using site-level resolution for annotation review and suggest that stricter filtering may be warranted in workflows where clinical confidence is a priority.
-**---
+This analysis classifies clinical significance at CHROM + POS + ID-defined sites. Of these, 57% are labeled `Pathogenic` without conflicting annotations, while the remaining 43% contain at least one conflicting or ambiguous interpretation. These results emphasize the value of site-resolved logic when prioritizing variants for clinical interpretation or filtering.
+
+---
+
+## Summary Table Comparison
+
+| Section | Grouping Used      | Analysis Focus                                      | Primary Use Case                                                         |
+| ------- | ------------------ | --------------------------------------------------- | ------------------------------------------------------------------------ |
+| 1       | `ID` only          | Annotation inflation, row-level duplication         | Justification for deduplication in summary tables                        |
+| 2       | `CHROM + POS + ID` | Pathogenic consistency across site-resolved matches | High-confidence pathogenic site identification, strict variant filtering |
 
 
 ---
 
 ## Conclusions
 
-The CHROM + POS + ID join strategy provides position-resolved resolution for rsID-annotated array variants. Of the 3,931 unique variant sites identified through this approach, 57% are consistently annotated as `Pathogenic`, while the remaining 43% exhibit mixed or conflicting interpretations. This highlights the value of site-level evaluation in downstream variant prioritization.
+The CHROM + POS + ID join strategy was used to annotate array-based rsIDs against ClinVar data. This approach identified 3,931 unique variant sites. Of these, 57% were annotated exclusively as Pathogenic, while the remaining 43% had mixed or conflicting significance labels.
 
-Reference (`REF`) and alternate (`ALT`) alleles were preserved in the output but were excluded from join criteria to reduce dropouts due to allele encoding inconsistencies across sources.
+Reference (REF) and alternate (ALT) alleles were preserved in the output but excluded from the join criteria to avoid annotation dropouts due to allele encoding mismatches between sources.
+
+This join strategy provided a position-resolved annotation table that maintains compatibility with downstream variant-level summaries, while acknowledging that allele-level distinctions were not enforced.
 
 
 ---
