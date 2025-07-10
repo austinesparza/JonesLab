@@ -171,3 +171,49 @@ print(clinsig_summary_unique_once)
 - Apply VCF-based tools like `bcftools annotate` for genome-wide annotation.
 - Use this harmonized rsID table to support downstream filtering of variants in ovarian cancer gene panels.
 
+# Supplemental Appendix: File Paths and Directory Structure
+
+## 🔹 Project Root
+```r
+setwd("/Users/austinesparza/Downloads/JonesLab/scripts/2025jul10_0900_dbsnpVariant_ClinVar_Annotation_v.01")
+project_dir <- "/Users/austinesparza/Downloads/JonesLab/scripts/2025jul10_0900_dbsnpVariant_ClinVar_Annotation_v.01"
+```
+### File Structures and Critical File Pathways
+
+## 🔹 Directory Layout
+```bash
+2025jul10_0900_dbsnpVariant_ClinVar_Annotation_v.01/
+├── data_raw/           # Input files (ClinVar + dbSNP TSVs)
+│   ├── clinvar_20250706_chr13_14_16_17_with_RS_CLNSIG.tsv
+│   └── dbSNP_variants_on_array_cleaned.tsv
+├── data_processed/     # Output tables and annotated results
+│   ├── AEsparza_JonesLab_ClinVar_Annotation_RSOnly_2025jul10_v.01.tsv
+│   ├── AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_LeftJoin_2025jul10_v.01.tsv
+│   └── AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_2025jul10_v.02.tsv
+├── scripts/            # R scripts or shell utilities (if added)
+├── AEsparza_JonesLab_RSessionLog_2025jul10_1113_v.01.txt
+├── AEsparza_JonesLab_RCommandHistory_2025jul10_1113.Rhistory
+```
+
+## 🔹 Input Files
+| Filename                                                                 | Description                                                                 |
+|--------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| `dbSNP_variants_on_array_cleaned.tsv`                                    | Variant list from Global Diversity Array with `CHROM`, `POS`, `REF`, `ALT`, and `rsID` |
+| `clinvar_20250706_chr13_14_16_17_with_RS_CLNSIG.tsv`                     | Extracted ClinVar VCF (GRCh37) subset from chromosomes 13, 14, 16, 17        |
+
+## 🔹 Output Files
+| Filename                                                                  | Description                                                            |
+|---------------------------------------------------------------------------|------------------------------------------------------------------------|
+| `AEsparza_JonesLab_ClinVar_Annotation_RSOnly_2025jul10_v.01.tsv`         | rsID-only left join annotation table                                  |
+| `AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_LeftJoin_2025jul10_v.01.tsv`    | CHROM + POS + ID left join annotation table                           |
+| `AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_2025jul10_v.02.tsv`             | Inner join version of the above (diagnostic comparison)               |
+| `AEsparza_JonesLab_RSessionLog_2025jul10_1113_v.01.txt`                  | Raw RStudio console log (after `sink()` command)                      |
+| `AEsparza_JonesLab_RCommandHistory_2025jul10_1113.Rhistory`              | Full R command history saved via `savehistory()`                      |
+
+## 🔹 Path Initialization Example in R
+```r
+clinvar_path <- file.path(project_dir, "data_raw", "clinvar_20250706_chr13_14_16_17_with_RS_CLNSIG.tsv")
+dbsnp_path <- file.path(project_dir, "data_raw", "dbSNP_variants_on_array_cleaned.tsv")
+output_path <- file.path(project_dir, "data_processed", "AEsparza_JonesLab_ClinVar_Annotation_RSOnly_2025jul10_v.01.tsv")
+```
+
