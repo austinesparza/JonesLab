@@ -174,6 +174,75 @@ The table below summarizes key statistics used to evaluate annotation inflation 
 
 These results confirm that a substantial proportion of rsIDs (1,229) appear more than once in the joined data, with 866 of those linked to multiple clinical interpretations. Without deduplication, summary statistics would reflect repeated rows rather than unique loci, overstating annotation coverage and misrepresenting category frequencies. For this reason, we report one clinical significance label per rsID in summary tables while retaining the full joined output for downstream analyses that require allele-level detail.
 
+
+# Clinical Significance Consistency per Variant Site
+
+## Join Logic and Purpose
+
+This section evaluates annotation consistency at the variant-site level, using a composite join key (`CHROM + POS + ID`) to ensure each genomic position is interpreted in the context of its full site. The goal is to determine whether all matched annotations at a given site agree on a "Pathogenic" interpretation.
+
+We define **strictly pathogenic sites** as those where every ClinVar annotation entry is labeled `Pathogenic`, with no conflicting interpretations such as *Benign*, *Likely\_benign*, *Uncertain\_significance*, or `NA`.
+
+---
+
+## Grouping and Classification Logic
+
+- **Join logic:** `CHROM + POS + ID` (applied during the dbSNP–ClinVar merge)
+- **Grouping logic:** `group_by(CHROM, POS, ID)`
+- **Classification criteria:**
+  - **Strictly Pathogenic (singleton):** one matching row labeled `Pathogenic`
+  - **Strictly Pathogenic (multi-row):** multiple rows, all consistently labeled `Pathogenic`
+  - **Conflicted / Mixed:** one or more rows with a non-Pathogenic label
+
+---
+
+## R Code Implementation
+
+```r
+rsid_summary_pos <- matched_chr_pos_id_left %>%
+  group_by(CHROM, POS, ID) %>%
+  summarise(
+    row_count = n(),
+    clnsig_count = n_distinct(CLNSIG),
+    all_pathogenic = all(CLNSIG == "Pathogenic", na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+exclusive_pathogenic_singleton <- rsid_summary_pos %>%
+  filter(row_count == 1 & all_pathogenic == TRUE)
+
+exclusive_pathogenic_multirow <- rsid_summary_pos %>%
+  filter(row_count > 1 & all_pathogenic == TRUE)
+
+conflicted_pathogenic <- rsid_summary_pos %>%
+  filter(all_pathogenic == FALSE)
+
+n_exclusive_single <- nrow(exclusive_pathogenic_singleton)  # 2105
+n_exclusive_multi  <- nrow(exclusive_pathogenic_multirow)   # 139
+n_conflicted       <- nrow(conflicted_pathogenic)           # 1687
+n_total            <- nrow(rsid_summary_pos)                # 3931
+```
+
+---
+
+## Classification Summary Table
+
+| Category                        | Count | Description                                                                                |
+| ------------------------------- | ----- | ------------------------------------------------------------------------------------------ |
+| Strictly Pathogenic (singleton) | 2,105 | Variant sites with a single ClinVar match (one row) labeled `Pathogenic`.                  |
+| Strictly Pathogenic (multi-row) | 139   | Variant sites with multiple ClinVar entries, all consistently labeled `Pathogenic`.        |
+| Conflicted or mixed annotations | 1,687 | Variant sites with multiple distinct CLNSIG labels (e.g., `Pathogenic + Benign`, or `NA`). |
+| **Total unique variant sites**  | 3,931 | All variant sites uniquely defined by `CHROM + POS + ID`.                                  |
+
+---
+
+## Interpretation
+
+This analysis provides a resolution-aware classification of clinical significance across variant sites. It confirms that a majority (57%) of evaluated variant sites are unambiguously labeled `Pathogenic`, while the remaining 43% exhibit interpretive conflicts or ambiguity. These findings reinforce the importance of context-aware annotation logic and support conservative downstream filtering when clinical confidence is critical.
+
+---
+
+
 ---
 
 ## Conclusions
@@ -192,14 +261,14 @@ These results confirm that a substantial proportion of rsIDs (1,229) appear more
 
 # Supplemental Appendix: File Paths and Directory Structure
 
-## 🔹 Project Root
+## Project Root
 ```r
 setwd("/Users/austinesparza/Downloads/JonesLab/scripts/2025jul10_0900_dbsnpVariant_ClinVar_Annotation_v.01")
 project_dir <- "/Users/austinesparza/Downloads/JonesLab/scripts/2025jul10_0900_dbsnpVariant_ClinVar_Annotation_v.01"
 ```
 ### File Structures and Critical File Pathways
 
-## 🔹 Directory Layout
+## Directory Layout
 ```bash
 2025jul10_0900_dbsnpVariant_ClinVar_Annotation_v.01/
 ├── data_raw/           # Input files (ClinVar + dbSNP TSVs)
@@ -214,13 +283,13 @@ project_dir <- "/Users/austinesparza/Downloads/JonesLab/scripts/2025jul10_0900_d
 ├── AEsparza_JonesLab_RCommandHistory_2025jul10_1113.Rhistory
 ```
 
-## 🔹 Input Files
+## Input Files
 | Filename                                                                 | Description                                                                 |
 |--------------------------------------------------------------------------|-----------------------------------------------------------------------------|
 | `dbSNP_variants_on_array_cleaned.tsv`                                    | Variant list from Global Diversity Array with `CHROM`, `POS`, `REF`, `ALT`, and `rsID` |
 | `clinvar_20250706_chr13_14_16_17_with_RS_CLNSIG.tsv`                     | Extracted ClinVar VCF (GRCh37) subset from chromosomes 13, 14, 16, 17        |
 
-## 🔹 Output Files
+## Output Files
 | Filename                                                                  | Description                                                            |
 |---------------------------------------------------------------------------|------------------------------------------------------------------------|
 | `AEsparza_JonesLab_ClinVar_Annotation_RSOnly_2025jul10_v.01.tsv`         | rsID-only left join annotation table                                  |
@@ -229,7 +298,7 @@ project_dir <- "/Users/austinesparza/Downloads/JonesLab/scripts/2025jul10_0900_d
 | `AEsparza_JonesLab_RSessionLog_2025jul10_1113_v.01.txt`                  | Raw RStudio console log (after `sink()` command)                      |
 | `AEsparza_JonesLab_RCommandHistory_2025jul10_1113.Rhistory`              | Full R command history saved via `savehistory()`                      |
 
-## 🔹 Path Initialization Example in R
+## Path Initialization Example in R
 ```r
 clinvar_path <- file.path(project_dir, "data_raw", "clinvar_20250706_chr13_14_16_17_with_RS_CLNSIG.tsv")
 dbsnp_path <- file.path(project_dir, "data_raw", "dbSNP_variants_on_array_cleaned.tsv")
