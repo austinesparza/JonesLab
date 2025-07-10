@@ -306,13 +306,16 @@ project_dir <- "/Users/austinesparza/Downloads/JonesLab/scripts/2025jul10_0900_d
 | `clinvar_20250706_chr13_14_16_17_with_RS_CLNSIG.tsv`                     | Extracted ClinVar VCF (GRCh37) subset from chromosomes 13, 14, 16, 17        |
 
 ## Output Files
-| Filename                                                                  | Description                                                            |
-|---------------------------------------------------------------------------|------------------------------------------------------------------------|
-| `AEsparza_JonesLab_ClinVar_Annotation_RSOnly_2025jul10_v.01.tsv`         | rsID-only left join annotation table                                  |
-| `AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_LeftJoin_2025jul10_v.01.tsv`    | CHROM + POS + ID left join annotation table                           |
-| `AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_2025jul10_v.02.tsv`             | Inner join version of the above (diagnostic comparison)               |
-| `AEsparza_JonesLab_RSessionLog_2025jul10_1113_v.01.txt`                  | Raw RStudio console log (after `sink()` command)                      |
-| `AEsparza_JonesLab_RCommandHistory_2025jul10_1113.Rhistory`              | Full R command history saved via `savehistory()`                      |
+| Filename                                                                   | Description                                                                          |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `AEsparza_JonesLab_ClinVar_Annotation_RSOnly_2025jul10_v.01.tsv`           | rsID-only left join annotation table                                                 |
+| `AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_LeftJoin_2025jul10_v.01.tsv`      | CHROM + POS + RSID left join annotation table (includes reference/alternate alleles) |
+| `AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_2025jul10_v.02.tsv`               | Inner join version of the above for diagnostic comparison                            |
+| `AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_LeftJoin_Slim_2025jul10_v.01.tsv` | Final cleaned output file (CHROM, POS, RSID, REF, ALT, CLNSIG only)                  |
+| `AEsparza_JonesLab_RSessionLog_2025jul10_1113_v.01.txt`                    | RStudio console log saved using `sink()`                                             |
+| `AEsparza_JonesLab_RCommandHistory_2025jul10_1113.Rhistory`                | Full R command history captured using `savehistory()`                                |
+
+
 
 ## Path Initialization Example in R
 ```r
