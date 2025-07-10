@@ -238,8 +238,8 @@ n_total            <- nrow(rsid_summary_pos)                # 3931
 
 ## Interpretation
 
-This analysis characterizes clinical significance consistency at the variant-site level. It shows that over half (57%) of evaluated sites are exclusively annotated as Pathogenic, while the remaining 43% display variation in interpretation. These results highlight the relevance of using site-level resolution for annotation review and suggest that stricter filtering may be warranted in workflows where clinical confidence is a priority.
----
+**This analysis characterizes clinical significance consistency at the variant-site level. It shows that over half (57%) of evaluated sites are exclusively annotated as Pathogenic, while the remaining 43% display variation in interpretation. These results highlight the relevance of using site-level resolution for annotation review and suggest that stricter filtering may be warranted in workflows where clinical confidence is a priority.
+**---
 
 
 ---
