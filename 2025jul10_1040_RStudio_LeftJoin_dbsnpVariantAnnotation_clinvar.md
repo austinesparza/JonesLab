@@ -237,14 +237,14 @@ n_total            <- nrow(rsid_summary_pos)                # 3931
 | ------------------------------------------ | ----- | --------------------------------------------------------------------------------------------------------------------- |
 | Strictly Pathogenic (singleton)            | 2,105 | Strictly Pathogenic (singleton) sites are those with a single ClinVar match (one row), all labeled `Pathogenic`.      |
 | Strictly Pathogenic (multi-row)            | 139   | Strictly Pathogenic (multi-row) sites are those with multiple ClinVar entries, all consistently labeled `Pathogenic`. |
-| Conflicted or mixed annotations            | 1,687 | Conflicted annotations (e.g., `Pathogenic + Benign`, or `NA`).                                                        |
-| **Total variant sites (CHROM + POS + ID)** | 3,931 | All variant sites uniquely defined by `CHROM + POS + ID`.                                                             |
+| Conflicted annotations                     | 1,687 | Conflicted annotations (e.g., `Pathogenic + Benign`, or `NA`).                                                        |
+| **Total variant sites (Total CHROM + POS + ID-defined sites)** | 3,931 | All variant sites uniquely defined by `CHROM + POS + ID`.                                                             |
 
 ---
 
 ## Interpretation
 
-This analysis classifies clinical significance at CHROM + POS + ID-defined sites. Of these, 57% are labeled `Pathogenic` without conflicting annotations, while the remaining 43% contain at least one conflicting or ambiguous interpretation. These results emphasize the value of site-resolved logic when prioritizing variants for clinical interpretation or filtering.
+This analysis classifies clinical significance at CHROM + POS + ID-defined sites. Among these, 57% are classified as strictly pathogenic, while 43% have at least one conflicting annotation.
 
 ---
 
