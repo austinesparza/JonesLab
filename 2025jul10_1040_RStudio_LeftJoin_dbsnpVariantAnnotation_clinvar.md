@@ -246,9 +246,10 @@ n_total            <- nrow(rsid_summary_pos)                # 3931
 
 ## Conclusions
 
-- The **CHROM + POS + ID** approach yielded the highest confidence set of rsID-annotated array variants.
-- **Total annotated rsIDs**: 3931 (deduplicated by ID).
-- REF and ALT were preserved but excluded from matching to avoid dropouts from allele encoding mismatches.
+The CHROM + POS + ID join strategy provides position-resolved resolution for rsID-annotated array variants. Of the 3,931 unique variant sites identified through this approach, 57% are consistently annotated as `Pathogenic`, while the remaining 43% exhibit mixed or conflicting interpretations. This highlights the value of site-level evaluation in downstream variant prioritization.
+
+Reference (`REF`) and alternate (`ALT`) alleles were preserved in the output but were excluded from join criteria to reduce dropouts due to allele encoding inconsistencies across sources.
+
 
 ---
 
