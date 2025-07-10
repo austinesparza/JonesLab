@@ -145,6 +145,12 @@ print(clinsig_summary_unique_once)
 | Likely\_pathogenic                              | 23                |
 | TOTAL                                           | 3931              |
 
+### Explanation of Workflow Logic
+
+This section documents the data integration workflow used to merge array-matched dbSNP variants with ClinVar clinical significance annotations. We normalized both datasets to shared key fields (`CHROM`, `POS`, `ID`) and performed a left join to retain all dbSNP positions present on the array, even if no ClinVar annotation was found. The resulting joined table (`matched_chr_pos_id_left`) forms the core dataset used throughout this analysis.
+
+We chose to exclude `REF` and `ALT` alleles from the join key to avoid unintended dropout due to inconsistent allele formatting between dbSNP and ClinVar. However, these fields were retained in the output to support downstream allele-level verification. A one-row-per-ID summarization step was then applied to generate a simplified summary table of clinical significance categories, which informs baseline annotation coverage and guides filtering decisions later in the workflow.
+
 ---
 
 ## Method Comparison Summary
