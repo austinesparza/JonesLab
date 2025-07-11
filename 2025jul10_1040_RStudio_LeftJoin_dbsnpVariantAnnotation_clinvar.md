@@ -354,6 +354,100 @@ write_tsv(
 
 This cleanup step produces a final variant annotation file that maintains rsID resolution, ClinVar CLNSIG interpretation, and harmonized `POS` + `ALT` logic without the noise of redundant allele fields. The result is optimized for downstream analysis, visualization, or publication without risk of annotation ambiguity.
 
+## 2.4 Collapsing ClinVar Annotations by dbSNP Variant
+
+After joining the array-based dbSNP variant list to ClinVar using `CHROM`, `POS`, and `RSID`, the merged dataset contained 5,624 rows. This expansion was due to multiple ClinVar entries for some dbSNP variants, each carrying distinct clinical significance classifications or alternate rsIDs.
+
+To restore one row per variant, we collapsed this table by grouping on `CHROM`, `POS`, `RSID`, `REF`, and `ALT`. For each variant, we aggregated all unique ClinVar significance labels and rsIDs using semicolon-delimited strings.
+
+```{r collapse-clinvar-annotations, echo=TRUE}
+collapsed_df <- annot_df %>%
+  group_by(
+    CHROM,
+    POS,
+    RSID,
+    REF = REF_dbSNP_variants_on_array_cleaned,
+    ALT = ALT_dbSNP_variants_on_array_cleaned
+  ) %>%
+  summarise(
+    CLNSIG_ClinVar = if (all(is.na(CLNSIG_ClinVar_20250706))) "NA" else paste(sort(unique(CLNSIG_ClinVar_20250706[!is.na(CLNSIG_ClinVar_20250706)])), collapse = ";"),
+    RSID_ClinVar = if (all(is.na(RSID_ClinVar_20250706))) "NA" else paste(sort(unique(RSID_ClinVar_20250706[!is.na(RSID_ClinVar_20250706)])), collapse = ";"),
+    .groups = "drop"
+  )
+```
+
+The resulting table contains 3,931 unique array-mapped variants, each annotated with all associated ClinVar classifications.
+
+---
+
+### Clinical Significance Breakdown
+
+```{r clinsig-summary-table, echo=TRUE}
+clinsig_summary <- collapsed_df %>%
+  count(CLNSIG_ClinVar, name = "RSID_Count") %>%
+  arrange(desc(RSID_Count))
+
+knitr::kable(clinsig_summary, format = "markdown")
+```
+
+---
+
+### Classification Categories
+
+We further grouped variants into three categories based on their ClinVar labels:
+- `Strictly Pathogenic`: variants annotated **only** as `"Pathogenic"`, with no conflicting or additional labels.
+- `Conflicted or Mixed`: all other annotated variants.
+- `Unannotated`: variants with no ClinVar annotation.
+
+```{r clinsig-categorization-summary, echo=TRUE}
+classified_summary <- collapsed_df %>%
+  mutate(
+    clinsig_class = case_when(
+      CLNSIG_ClinVar == "Pathogenic" ~ "Strictly Pathogenic",
+      CLNSIG_ClinVar == "NA" ~ "Unannotated",
+      TRUE ~ "Conflicted or Mixed"
+    )
+  ) %>%
+  count(clinsig_class, name = "RSID_Count") %>%
+  arrange(desc(RSID_Count))
+
+knitr::kable(classified_summary, format = "markdown")
+```
+
+---
+
+### Chromosome-Level Summary: Strictly Pathogenic Only
+
+This summary reports the number of dbSNP array variants per chromosome, and the number of those annotated **exclusively** as `"Pathogenic"`.
+
+```{r strict-pathogenic-by-chrom, echo=TRUE}
+strict_pathogenic_summary <- collapsed_df %>%
+  mutate(CHROM = as.character(CHROM)) %>%
+  group_by(CHROM) %>%
+  summarise(
+    `Original Count` = n(),
+    `Pathogenic Count` = sum(CLNSIG_ClinVar == "Pathogenic", na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  arrange(as.integer(CHROM))
+
+strict_pathogenic_summary_with_total <- bind_rows(
+  strict_pathogenic_summary,
+  tibble(
+    CHROM = "SUM",
+    `Original Count` = sum(strict_pathogenic_summary$`Original Count`),
+    `Pathogenic Count` = sum(strict_pathogenic_summary$`Pathogenic Count`)
+  )
+)
+
+knitr::kable(strict_pathogenic_summary_with_total, format = "markdown", col.names = c("Chromosome", "Original Count", "Pathogenic Count"))
+```
+
+---
+
+### Interpretation
+
+Of the 3,931 array variants analyzed, 638 are annotated strictly as `"Pathogenic"` in ClinVar. These variants are concentrated on chromosomes 13 and 17, consistent with the locations of *BRCA1*, *BRCA2*, and other clinically relevant genes. Variants with mixed or uncertain classifications were excluded from the strict pathogenic count to preserve interpretive specificity.
 
 # Supplemental Appendix: File Paths and Directory Structure
 
