@@ -275,6 +275,86 @@ This join strategy provided a position-resolved annotation table that maintains 
 - Apply VCF-based tools like `bcftools annotate` for genome-wide annotation.
 - Use this harmonized rsID table to support downstream filtering of variants in ovarian cancer gene panels.
 
+# Appendix: Column Cleanup and Final Output Preparation (`2025jul10_1500`)
+
+## Objective
+
+To prepare a final, publication-ready variant annotation table by:
+
+1. Deduplicating the ClinVar table to retain one entry per `POS` + `ALT` combination.
+2. Left joining with the rsID-mapped variant dataset using `POS` and `ALT_ClinVar_20250706`.
+3. Cleaning the joined output by:
+   - Removing redundant or intermediate columns (`REF_ClinVar_20250706`, `ALT_ClinVar_20250706`)
+   - Renaming `CLNSIG_ClinVar_20250706.x` to `CLNSIG_ClinVar_20250706` for clarity.
+
+## Workflow
+
+### 1. Deduplicate ClinVar Table
+
+```r
+clinvar_rsid_dedup <- clinvar_rsid_subset %>%
+    distinct(POS, ALT_ClinVar_20250706, .keep_all = TRUE)
+```
+
+### 2. Join Annotated Table with ClinVar RSID Info
+
+```r
+annotated_df_with_clinvar_rsid <- annotated_df %>%
+    left_join(clinvar_rsid_dedup, by = c("POS", "ALT_ClinVar_20250706"))
+```
+
+Post-join row counts were verified to confirm no inflation:
+
+```r
+nrow(annotated_df)                 # [1] 5623
+nrow(annotated_df_with_clinvar_rsid)  # [1] 5623
+```
+
+### 3. Write Intermediate Output to File
+
+```r
+write_tsv(
+  annotated_df_with_clinvar_rsid,
+  file.path(project_dir, "data_processed", "AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_WithClinVarRSID_2025jul10_1500_v.01.tsv")
+)
+```
+
+## Final Table Cleanup
+
+### 4. Remove Intermediate ClinVar Allele Columns
+
+```r
+annotated_cleaned_df <- annotated_df_with_clinvar_rsid %>%
+    select(-REF_ClinVar_20250706, -ALT_ClinVar_20250706)
+```
+
+### 5. Rename CLNSIG Column (Drop `.x`)
+
+```r
+colnames(annotated_cleaned_df)[colnames(annotated_cleaned_df) == "CLNSIG_ClinVar_20250706.x"] <- "CLNSIG_ClinVar_20250706"
+```
+
+### 6. Save Cleaned Output
+
+```r
+write_tsv(
+  annotated_cleaned_df,
+  file.path(project_dir, "data_processed", "AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_CleanedFinal_2025jul10_1500_v.01.tsv")
+)
+```
+
+## Output Description
+
+| Filename                                                                 | Description                                                                 |
+|--------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| `AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_WithClinVarRSID_2025jul10_1500_v.01.tsv` | Intermediate joined file containing all original and matched columns, including REF/ALT from ClinVar |
+| `AEsparza_JonesLab_ClinVar_dbSNP_RSMatch_CleanedFinal_2025jul10_1500_v.01.tsv`   | Final column-cleaned table retaining only essential identifiers and the updated ClinVar RSID and CLNSIG annotation |
+
+## Interpretation
+
+This cleanup step produces a final variant annotation file that maintains rsID resolution, ClinVar CLNSIG interpretation, and harmonized `POS` + `ALT` logic without the noise of redundant allele fields. The result is optimized for downstream analysis, visualization, or publication without risk of annotation ambiguity.
+
+
 # Supplemental Appendix: File Paths and Directory Structure
 
 ## Project Root
