@@ -4,23 +4,7 @@
 
 This project aims to characterize germline structural variant (SV) patterns using DRAGEN-called data from a case-control cohort, provided by Nimisha. The data are aligned to the GRCh37 reference genome and focus on deletions, duplications, inversions, and unresolved breakends (BNDs). This analysis is conducted in support of downstream work associated with the Infinium Global Diversity Array and requires consistent preprocessing and standardized outputs.
 
-## Directory Structure
 
-```
-SV_Exploration_2025jul15/
-├── data_raw/
-│   ├── all_cases.dragen.sv.txt
-│   └── all_controls.dragen.sv.txt
-├── data_processed/
-│   ├── AEsparza_JonesLab_CleanedCasesSV_2025jul16_v.01.tsv
-│   └── AEsparza_JonesLab_CleanedControlsSV_2025jul16_v.01.tsv
-├── results/
-│   └── plots/
-├── scripts/
-│   ├── AEsparza_JonesLab_ParseCasesSV_2025jul16_v.02.py
-│   └── AEsparza_JonesLab_ParseControlsSV_2025jul16_v.01.py
-└── logs/
-```
 
 ## Assignment Scope
 
@@ -33,34 +17,76 @@ Nimisha provided two DRAGEN-called SV files representing case and control cohort
 
 All work must remain GRCh37-specific to ensure compatibility with the Global Diversity Array platform.
 
-## Preprocessing Workflow
+# Jones Lab SV Standardization Summary  
+**Project:** *Discovery of Rare Germline Structural Variants in Epithelial Ovarian Cancer*  
+**Date:** July 17, 2025  
+**Analyst:** Austin Esparza  
 
-The case and control files were independently parsed and standardized using dedicated Python scripts. Both raw files were converted into clean tab-delimited tables with the following structure:
+## Directory Structure
 
-| Column Name     | Description                                            |
-|------------------|--------------------------------------------------------|
-| `sample_id`      | Name of the originating sample file                    |
-| `chrom`          | Chromosome (e.g., chr1, chr2, etc.)                    |
-| `start_pos`      | SV start coordinate in GRCh37                          |
-| `end_pos`        | SV end coordinate in GRCh37                            |
-| `sv_type`        | SV class (DEL, DUP, INV, INS, BND, etc.)              |
-| `sv_len`         | Reported SV length (signed)                            |
-| `sv_len_abs`     | Absolute SV length (for length-based analysis)         |
-| `source_group`   | Case or control indicator                              |
-| `caller`         | Variant caller (DRAGEN)                                |
-| `build`          | Genome reference build (GRCh37)                        |
+```
+/Users/austinesparza/Downloads/JonesLab/SV_Exploration_2025jul15
+├── data_processed
+│   ├── AEsparza_JonesLab_CleanedCasesSV_2025jul17_PreviewRows50_v.01.tsv
+│   ├── AEsparza_JonesLab_CleanedCasesSV_2025jul17_v.03.tsv
+│   ├── AEsparza_JonesLab_CleanedControlsSV_2025jul17_PreviewRows50_v.01.tsv
+│   └── AEsparza_JonesLab_CleanedControlsSV_2025jul17_v.02.tsv
+├── data_raw
+│   ├── all_cases.dragen.sv.txt
+│   └── all_controls.dragen.sv.txt
+├── logs
+├── results
+│   ├── AEsparza_JonesLab_ChromSVCounts_2025jul15_v.01.tsv
+│   ├── AEsparza_JonesLab_SVTypeSummary_2025jul15_v.01.tsv
+│   └── plots
+│       └── AEsparza_JonesLab_SVLEN_ViolinPlot_2025jul15_v.01.png
+└── scripts
+    ├── -Users-austinesparza-Downloads-JonesLab-SV_Exploration_2025jul15-scripts-AEsparza_JonesLab_ParseControlsSV_2025jul16_v.01.py
+    ├── AEsparza_JonesLab_ParseCasesSV_2025jul16_v.01.py
+    ├── AEsparza_JonesLab_ParseCasesSV_2025jul16_v.02.py
+    ├── AEsparza_JonesLab_ParseCasesSV_2025jul17_v.01.py
+    ├── AEsparza_JonesLab_ParseCasesSV_2025jul17_v.01.py .py
+    ├── AEsparza_JonesLab_ParseCasesSV_2025jul17_v.02.py
+    ├── AEsparza_JonesLab_ParseControlsSV_2025jul16_v.01.py
+    ├── AEsparza_JonesLab_ParseControlsSV_2025jul17_v.01.py
+    └── AEsparza_JonesLab_SVSummary_2025jul15_v.01.py
 
-### Case File Processing
+7 directories, 18 files
 
-- Input: `data_raw/all_cases.dragen.sv.txt`
-- Output: `data_processed/AEsparza_JonesLab_CleanedCasesSV_2025jul16_v.01.tsv`
-- Script: `scripts/AEsparza_JonesLab_ParseCasesSV_2025jul16_v.02.py`
+```
+---
 
-### Control File Processing
+## Parsing & Standardization Workflow
 
-- Input: `data_raw/all_controls.dragen.sv.txt`
-- Output: `data_processed/AEsparza_JonesLab_CleanedControlsSV_2025jul16_v.01.tsv`
-- Script: `scripts/AEsparza_JonesLab_ParseControlsSV_2025jul16_v.01.py`
+### Input Files
+- `data_raw/all_cases.dragen.sv.txt`
+- `data_raw/all_controls.dragen.sv.txt`
+
+### Scripts Executed
+- `scripts/AEsparza_JonesLab_ParseCasesSV_2025jul17_v.03.py`
+- `scripts/AEsparza_JonesLab_ParseControlsSV_2025jul17_v.02.py`
+
+### Transformations Applied
+- Parsed columns: `sample_id`, `chrom`, `start_pos`, `end_pos`, `sv_type`, `sv_len`, `format_field`
+- Computed fields:
+  - `sv_len_numeric`: Numeric conversion of SV length
+  - `sv_len_abs`: Absolute value of SV length
+- Metadata fields added:
+  - `caller = DRAGEN`
+  - `build = GRCh37`
+  - `source_group = case` or `control`
+- Output format: Cleaned `.tsv` files with consistent column names and structure
+
+---
+
+## Sample Representation Summary
+
+| Dataset                             | Output Filename                                              | Unique `sample_id` Count |
+|-------------------------------------|--------------------------------------------------------------|---------------------------|
+| **Cases** (likely affected cohort)  | `AEsparza_JonesLab_CleanedCasesSV_2025jul17_v.03.tsv`        | 1,016                     |
+| **Controls** (unaffected cohort)    | `AEsparza_JonesLab_CleanedControlsSV_2025jul17_v.02.tsv`     | 2,945                     |
+
+---
 
 ## Analytical Objectives
 
@@ -113,7 +139,7 @@ The aim of this work is to inform the design of scalable, reproducible SV analys
 
 ## Document History
 
-- Version: `v.01`
+- Version: `v.02`
 - Author: Austin Esparza
 - Last Updated: 2025-07-16
 - Mentor: Nimisha Mazumdar
