@@ -22,36 +22,54 @@ All work must remain GRCh37-specific to ensure compatibility with the Global Div
 **Date:** July 17, 2025  
 **Analyst:** Austin Esparza  
 
+# Requirements
+pandas>=1.3.0
+numpy>=1.21.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
+scipy>=1.7.0
+platformdirs>=2.0.0
+python-dateutil>=2.8.0
+
+## Environment Notes
+All analysis was performed on a local workstation (macOS 10.15.7) using Python 3.9. Packages were managed via `pip`. Scripts are compatible with Unix-style paths and assume availability of standard command-line utilities (e.g., `cat`, `wc`, `sort`) for optional audit steps.
+
 ## Directory Structure
 
 ```
-/Users/austinesparza/Downloads/JonesLab/SV_Exploration_2025jul15
-├── data_processed
-│   ├── AEsparza_JonesLab_CleanedCasesSV_2025jul17_PreviewRows50_v.01.tsv
-│   ├── AEsparza_JonesLab_CleanedCasesSV_2025jul17_v.03.tsv
-│   ├── AEsparza_JonesLab_CleanedControlsSV_2025jul17_PreviewRows50_v.01.tsv
-│   └── AEsparza_JonesLab_CleanedControlsSV_2025jul17_v.02.tsv
-├── data_raw
-│   ├── all_cases.dragen.sv.txt
-│   └── all_controls.dragen.sv.txt
-├── logs
-├── results
-│   ├── AEsparza_JonesLab_ChromSVCounts_2025jul15_v.01.tsv
-│   ├── AEsparza_JonesLab_SVTypeSummary_2025jul15_v.01.tsv
-│   └── plots
-│       └── AEsparza_JonesLab_SVLEN_ViolinPlot_2025jul15_v.01.png
-└── scripts
-    ├── -Users-austinesparza-Downloads-JonesLab-SV_Exploration_2025jul15-scripts-AEsparza_JonesLab_ParseControlsSV_2025jul16_v.01.py
-    ├── AEsparza_JonesLab_ParseCasesSV_2025jul16_v.01.py
-    ├── AEsparza_JonesLab_ParseCasesSV_2025jul16_v.02.py
-    ├── AEsparza_JonesLab_ParseCasesSV_2025jul17_v.01.py
-    ├── AEsparza_JonesLab_ParseCasesSV_2025jul17_v.01.py .py
-    ├── AEsparza_JonesLab_ParseCasesSV_2025jul17_v.02.py
-    ├── AEsparza_JonesLab_ParseControlsSV_2025jul16_v.01.py
-    ├── AEsparza_JonesLab_ParseControlsSV_2025jul17_v.01.py
-    └── AEsparza_JonesLab_SVSummary_2025jul15_v.01.py
+SV_Exploration_2025jul15/
+├── data_raw/
+│ ├── all_cases.dragen.sv.txt
+│ └── all_controls.dragen.sv.txt
+├── data_processed/
+│ ├── AEsparza_JonesLab_CleanedCasesSV_.tsv
+│ └── AEsparza_JonesLab_CleanedControlsSV_.tsv
+├── results/
+│ ├── AEsparza_JonesLab_ChromSVCounts_.tsv
+│ ├── AEsparza_JonesLab_SVTypeSummary_.tsv
+│ ├── plots/
+│ │ └── AEsparza_JonesLab_SVLEN_ViolinPlot_.png
+│ ├── tables/
+│ │ ├── AEsparza_JonesLab_SVLengthRange_.tsv
+│ │ ├── AEsparza_JonesLab_SVLengthStats_.tsv
+│ │ ├── AEsparza_JonesLab_TopBottomChromSVs_.tsv
+│ │ └── AEsparza_JonesLab_ChromSVTypeSummary_.tsv
+│ └── dataframes/
+│ ├── AEsparza_JonesLab_AllSVs_Cleaned_.tsv
+│ ├── AllSVs_Case/
+│ │ └── AEsparza_JonesLab_SVCatalog_case_chr*.tsv
+│ └── AllSVs_Control/
+│ └── AEsparza_JonesLab_SVCatalog_control_chr*.tsv
+├── scripts/
+│ ├── AEsparza_JonesLab_ParseCasesSV_.py
+│ ├── AEsparza_JonesLab_ParseControlsSV_.py
+│ ├── AEsparza_JonesLab_SVSummary_.py
+│ ├── AEsparza_JonesLab_SVStats_Tables_.py
+│ ├── AEsparza_JonesLab_SVLengthRange_.py
+│ └── AEsparza_JonesLab_SplitSVs_ByGroupAndChrom_.py
+└── logs/
 
-7 directories, 18 files
+11 directories, 85 files
 
 ```
 ---
@@ -77,6 +95,24 @@ All work must remain GRCh37-specific to ensure compatibility with the Global Div
   - `source_group = case` or `control`
 - Output format: Cleaned `.tsv` files with consistent column names and structure
 
+### Post-Cleaning Transformations
+- Merged cleaned case/control TSVs into a unified master file
+- Calculated:
+  - `log10_sv_len_abs` (base-10 log of absolute SV length)
+  - Added `source_group` labels (case or control)
+- Split master table by group → chromosome using:
+  - `scripts/AEsparza_JonesLab_SplitSVs_ByGroupAndChrom_2025jul22_v.01.py`
+- Result: One `.tsv` per chromosome × group in `results/dataframes/AllSVs_[Group]/`
+
+## Output Naming Convention
+
+All files follow this convention:
+
+`AEsparza_JonesLab_[ContentDescription]_YYYYmonDD_v.##.[tsv|png|py]`
+
+- Example: `AEsparza_JonesLab_SVCatalog_case_chr17_2025jul22_v.01.tsv`
+- This ensures reproducibility, version tracking, and auditability.
+
 ---
 
 ## Sample Representation Summary
@@ -85,6 +121,17 @@ All work must remain GRCh37-specific to ensure compatibility with the Global Div
 |-------------------------------------|--------------------------------------------------------------|---------------------------|
 | **Cases** (likely affected cohort)  | `AEsparza_JonesLab_CleanedCasesSV_2025jul17_v.03.tsv`        | 1,016                     |
 | **Controls** (unaffected cohort)    | `AEsparza_JonesLab_CleanedControlsSV_2025jul17_v.02.tsv`     | 2,945                     |
+
+## Summary Statistics Tables
+
+| Filename                                                                 | Description                                 |
+|--------------------------------------------------------------------------|---------------------------------------------|
+| `AEsparza_JonesLab_SVTypeSummary_2025jul15_v.01.tsv`                     | Raw type distribution summary               |
+| `AEsparza_JonesLab_ChromSVTypeTotals_WithAndWithoutBND_2025jul17_v.01.tsv` | SV type totals per chromosome (with/without BNDs) |
+| `AEsparza_JonesLab_ChromSVTypeSummary_2025jul17_v.01.tsv`               | Burden stratified by chromosome and type    |
+| `AEsparza_JonesLab_SVLengthStats_AllTypes_2025jul17_v.01.tsv`           | Length stats (min, max, median, etc.)       |
+| `AEsparza_JonesLab_SVLengthRange_DEL_DUP_INV_2025jul17_v.01.tsv`        | Raw and log-scaled length ranges            |
+| `AEsparza_JonesLab_TopBottomChromSVs_2025jul17_v.01.tsv`                | Top/bottom 3 chromosomes by burden          |
 
 ---
 
@@ -109,12 +156,17 @@ The following tasks are planned based on the cleaned and harmonized datasets:
    - Bar plots of SV count per chromosome.
    - All visualizations stored in `results/plots/`.
 
-## Next Steps
+## Next Steps (As of July 22, 2025)
 
-- Implement core summary statistics for DEL, DUP, and INV SVs.
-- Perform per-chromosome burden analysis and generate bar plots.
-- Create violin plots for SV length distributions by group and SV type.
-- Evaluate BND distribution separately and identify possible artifacts or resolution failures.
+- [x] Clean and standardize DRAGEN-called SV files
+- [x] Merge case/control data with length and log transforms
+- [x] Split full catalog by chromosome × group
+- [x] Compute summary tables of SV burden and length ranges
+- [x] Visualize SV length distributions using violin plots
+- [ ] Visualize per-chromosome SV burden using bar plots
+- [ ] Evaluate BND resolution failures (preliminary clustering analysis)
+- [ ] Apply statistical comparisons between case/control distributions (e.g., KS test, Wilcoxon)
+
 
 ## Notes
 
@@ -139,7 +191,11 @@ The aim of this work is to inform the design of scalable, reproducible SV analys
 
 ## Document History
 
-- Version: `v.02`
-- Author: Austin Esparza
-- Last Updated: 2025-07-17
-- Mentor: Nimisha Mazumdar
+| Version | Date       | Updates Summary                                                              |
+|---------|------------|-------------------------------------------------------------------------------|
+| v.01    | 2025-07-17 | Initial documentation of parsing workflow and objectives                     |
+| v.02    | 2025-07-18 | Added merged master table and violin plot generation                         |
+| v.03    | 2025-07-22 | Split by group/chromosome, added SV type summaries, log-scaled lengths, etc. |
+
+**Current Version:** v.03  
+**Maintainer:** Austin Esparza  
