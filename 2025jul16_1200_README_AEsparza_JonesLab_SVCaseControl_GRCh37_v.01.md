@@ -152,8 +152,7 @@ The following tasks are planned based on the cleaned and harmonized datasets:
    - Exploration of patterns that may explain lack of resolution.
 
 4. **Visualization and Reporting**
-   - Violin and histogram plots of SV lengths.
-   - Bar plots of SV count per chromosome.
+   - Bar plots (stacked?) of SV count per chromosome.
    - All visualizations stored in `results/plots/`.
 
 ## Next Steps (As of July 22, 2025)
