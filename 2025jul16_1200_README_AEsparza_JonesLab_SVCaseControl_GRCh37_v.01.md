@@ -119,8 +119,8 @@ All files follow this convention:
 
 | Dataset                             | Output Filename                                              | Unique `sample_id` Count |
 |-------------------------------------|--------------------------------------------------------------|---------------------------|
-| **Cases** (likely affected cohort)  | `AEsparza_JonesLab_CleanedCasesSV_2025jul17_v.03.tsv`        | 1,016                     |
-| **Controls** (unaffected cohort)    | `AEsparza_JonesLab_CleanedControlsSV_2025jul17_v.02.tsv`     | 2,945                     |
+| **Cases**                           | `AEsparza_JonesLab_CleanedCasesSV_2025jul17_v.03.tsv`        | 1,016                     |
+| **Controls**                        | `AEsparza_JonesLab_CleanedControlsSV_2025jul17_v.02.tsv`     | 2,945                     |
 
 ## Summary Statistics Tables
 
