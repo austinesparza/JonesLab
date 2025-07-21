@@ -194,7 +194,8 @@ The aim of this work is to inform the design of scalable, reproducible SV analys
 | Version | Date       | Updates Summary                                                              |
 |---------|------------|-------------------------------------------------------------------------------|
 | v.01    | 2025-07-17 | Initial documentation of parsing workflow and objectives                     |
-| v.02    | 2025-07-18 | Added merged master table and violin plot generation                         |
+| v.02    | 2025-07-18 | Added merged master table
+ |
 | v.03    | 2025-07-22 | Split by group/chromosome, added SV type summaries, log-scaled lengths, etc. |
 
 **Current Version:** v.03  
