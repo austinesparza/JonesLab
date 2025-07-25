@@ -89,14 +89,53 @@ grep -Ff /Users/austinesparza/Downloads/JonesLab/data_processed/dbSNP_variants_o
 Filtered TSV of pathogenic variants found on the array.
 
 ---
+## Step 5: Extract Full VCF Records for Matched Pathogenic rsIDs
+
+This step isolates the full ClinVar VCF entries for variants classified as *Pathogenic* and intersecting with rsIDs present on the genotyping array. It first greps for any line in the ClinVar VCF containing “Pathogenic,” then filters those by the rsID set from the array.
+
+```bash
+# Extract all "Pathogenic"-annotated records from ClinVar VCF
+bcftools view -H /Users/austinesparza/Downloads/JonesLab/data_raw/clinvar/clinvar.vcf.gz \
+  | grep "Pathogenic" \
+  > /Users/austinesparza/Downloads/JonesLab/tmp/pathogenic_lines_rawgrep.txt
+
+# Intersect array rsIDs with pathogenic ClinVar lines
+while read -r line; do
+  variant="${line#rs}"
+  grep -w "$variant" /Users/austinesparza/Downloads/JonesLab/tmp/pathogenic_lines_rawgrep.txt
+done < /Users/austinesparza/Downloads/JonesLab/data_raw/dbSNP_variants_on_array.ids.txt \
+> /Users/austinesparza/Downloads/JonesLab/results/dbSNP_variants_on_array_pathogenic_clinvar_grepmatch_2025jul24_v.01.vcf
+```
+## Step 6: Convert Final VCF to TSV for Downstream Analysis
+
+```bash
+bcftools query -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%INFO/RS\t%INFO/CLNSIG\n' \
+  /Users/austinesparza/Downloads/JonesLab/results/dbSNP_variants_on_array_pathogenic_clinvar_grepmatch_2025jul24_v.01.vcf \
+  > /Users/austinesparza/Downloads/JonesLab/results/dbSNP_variants_on_array_pathogenic_clinvar_grepmatch_2025jul24_v.01.tsv
+```
+
+**Output:**  
+`/Users/austinesparza/Downloads/JonesLab/results/dbSNP_variants_on_array_pathogenic_clinvar_grepmatch_2025jul24_v.01.tsv`  
+Tab-delimited file with positional data, RSID, and CLNSIG annotations.
+
+**Output:**
+- `/Users/austinesparza/Downloads/JonesLab/results/dbSNP_variants_on_array_pathogenic_clinvar_grepmatch_2025jul24_v.01.vcf`  
+  Contains full ClinVar VCF records (non-header) where `CLNSIG` includes *Pathogenic* and `RS` matches one of the array rsIDs.
+
+
 
 ## Summary
 
-| Step     | Description                                     | Output                                                   |
-|----------|-------------------------------------------------|----------------------------------------------------------|
-| Step 1   | Count valid RSID + CLNSIG entries               | 2.9 million total; 188k containing “Pathogenic”          |
-| Step 2   | Export ClinVar pathogenic RSIDs                 | `clinvar_pathogenic_rs_clnsig_2025jul24_v.01.tsv`        |
-| Step 3   | Normalize array rsIDs                           | `dbSNP_variants_on_array_numeric.ids.txt`               |
-| Step 4   | Match ClinVar pathogenic RSIDs to array content | `pathogenic_rsID_on_array_2025jul24_v.01.tsv`            |
+| Step     | Description                                             | Output                                                              |
+|----------|---------------------------------------------------------|----------------------------------------------------------------------|
+| Step 1   | Count valid RSID + CLNSIG entries                       | 2.9 million total; 188k containing “Pathogenic”                     |
+| Step 2   | Export ClinVar pathogenic RSIDs                         | `clinvar_pathogenic_rs_clnsig_2025jul24_v.01.tsv`                   |
+| Step 3   | Normalize array rsIDs                                   | `dbSNP_variants_on_array_numeric.ids.txt`                           |
+| Step 4   | Match ClinVar pathogenic RSIDs to array content         | `pathogenic_rsID_on_array_2025jul24_v.01.tsv`                        |
+| Step 5   | Extract full VCF entries for matched pathogenic rsIDs   | `dbSNP_variants_on_array_pathogenic_clinvar_grepmatch_2025jul24_v.01.vcf` |
+| Step 6   | Convert filtered VCF entries to TSV format              | `dbSNP_variants_on_array_pathogenic_clinvar_grepmatch_2025jul24_v.01.tsv` |
 
-This workflow establishes a filtered, array-aware list of pathogenic germline variants based on publicly available ClinVar data.
+
+This workflow enables efficient identification of ClinVar-classified pathogenic variants that are directly assayed by the Infinium Global Diversity Array. By intersecting array rsIDs with ClinVar's annotated pathogenic entries, it provides a rapid mechanism to flag clinically significant markers already represented in the array design, supporting downstream variant prioritization, carrier identification, and assessment of clinical relevance from array-based genotyping data.
+
+v.03
