@@ -187,6 +187,15 @@ The initial analytical scope is defined by the following tasks:
 
 The aim of this work is to inform the design of scalable, reproducible SV analysis workflows that are compatible with other GRCh37-based datasets, including genotyping arrays such as the Infinium Global Diversity Array. All coordinate systems and annotations remain GRCh37-specific. Visualization strategies are selected to prioritize clarity, interpretability, and publication-quality output. This document will be expanded as additional input files are incorporated or as analytical priorities shift.
 
+| **Purpose**                                           | **Expected Filename**                                                    | **Intended Location** |
+| ----------------------------------------------------- | ------------------------------------------------------------------------ | --------------------- |
+| Chromosome-level SV burden bar plot (all types)       | `AEsparza_JonesLab_ChromSVBarplot_2025jul28_v.01.png`                    | `results/plots/`      |
+| Chromosome-level BND-specific SV burden plot          | `AEsparza_JonesLab_BND_BurdenBarplot_2025jul28_v.01.png`                 | `results/plots/`      |
+| Statistical test output (KS and Wilcoxon)             | `AEsparza_JonesLab_CaseControl_KS_Wilcoxon_Results_2025jul28_v.01.tsv`   | `results/tables/`     |
+| Combined SV master table (case + control, log-scaled) | `AEsparza_JonesLab_AllSVs_Cleaned_2025jul18_v.01.tsv`                    | `results/dataframes/` |
+| Statistical summary of SV length comparisons          | `AEsparza_JonesLab_SVLengthStats_StatTests_2025jul28_v.01.tsv`           | `results/tables/`     |
+| Updated README version with new results and visuals   | `2025jul28_README_DRAGEN_AEsparza_JonesLab_SVCaseControl_GRCh37_v.04.md` | `./` (project root)   |
+
 
 ## Document History
 
