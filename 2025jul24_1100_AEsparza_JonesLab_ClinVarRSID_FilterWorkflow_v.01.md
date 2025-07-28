@@ -195,6 +195,34 @@ The output file contained one entry, but was otherwise **empty**, confirming tha
 | Step 8   | Confirm exclusion of benign/uncertain variants (List 2) | `rsid_falsepositive_check_2025jul25_v.01.tsv`                        |
 
 
+## File Inventory: ClinVar Pathogenic rsID Array Matching (as of 25 July 2025)
+
+| **File Type** | **File Name** | **Full Path** | **Purpose** |
+|---------------|---------------|----------------|-------------|
+| **Input – ClinVar VCF** | `clinvar.vcf.gz` | `/Users/austinesparza/Downloads/JonesLab/data_raw/clinvar/clinvar.vcf.gz` | Master ClinVar database (bgzipped VCF); used as the annotation reference |
+| **Input – Array rsIDs** | `dbSNP_variants_on_array.ids.txt` | `/Users/austinesparza/Downloads/JonesLab/data_raw/dbSNP_variants_on_array.ids.txt` | rsID list from the Infinium Global Diversity Array (rs-prefixed) |
+| **Derived Input – Numeric rsIDs** | `dbSNP_variants_on_array_numeric.ids.txt` | `/Users/austinesparza/Downloads/JonesLab/data_processed/dbSNP_variants_on_array_numeric.ids.txt` | Same rsIDs as above, but stripped of `rs` prefix for matching |
+
+---
+
+| **File Type** | **File Name** | **Full Path** | **Purpose** |
+|---------------|---------------|----------------|-------------|
+| **Output – Pathogenic rsID List** | `clinvar_pathogenic_rs_clnsig_2025jul24_v.01.tsv` | `/Users/austinesparza/Downloads/JonesLab/data_processed/clinvar_pathogenic_rs_clnsig_2025jul24_v.01.tsv` | Two-column TSV of all ClinVar rsIDs with `CLNSIG` matching “Pathogenic”; no header |
+| **Output – Intersected rsIDs** | `pathogenic_rsID_on_array_2025jul24_v.01.tsv` | `/Users/austinesparza/Downloads/JonesLab/results/pathogenic_rsID_on_array_2025jul24_v.01.tsv` | Subset of ClinVar Pathogenic rsIDs that are also present on the array |
+| **Output – VCF Record Matches** | `dbSNP_variants_on_array_pathogenic_clinvar_grepmatch_2025jul24_v.01.tsv` | `/Users/austinesparza/Downloads/JonesLab/results/dbSNP_variants_on_array_pathogenic_clinvar_grepmatch_2025jul24_v.01.tsv` | Full ClinVar VCF entries matching pathogenic rsIDs intersecting the array (tabular) |
+| **Output – Summary Counts** | `dbSNP_Pathogenic_ByChromGene_2025jul24_v.01.tsv` | `/Users/austinesparza/Downloads/JonesLab/results/dbSNP_Pathogenic_ByChromGene_2025jul24_v.01.tsv` | TSV with unique pathogenic variant count broken down by chromosome and gene symbol |
+
+---
+
+| **Validation** | **File Name** | **Full Path** | **Purpose** |
+|---------------|---------------|----------------|-------------|
+| True Pathogenic RSID List (List 1) | `rsids_to_check.txt` | `/Users/austinesparza/Downloads/JonesLab/results/validation/rsids_to_check.txt` | Curated list of known pathogenic rsIDs from Nimisha (List 1) |
+| Validation Output (List 1) | `rsid_clinsig_validation_2025jul24_v.01.txt` | `/Users/austinesparza/Downloads/JonesLab/results/validation/rsid_clinsig_validation_2025jul24_v.01.txt` | Aligned table showing `CLNSIG` status of List 1 rsIDs in final dataset |
+| Suspected False Positives (List 2) | *Inline `printf` array* | N/A | Manually specified in terminal for grep-based exclusion check |
+| Validation Output (List 2) | `rsid_falsepositive_check_2025jul25_v.01.tsv` | `/Users/austinesparza/Downloads/JonesLab/results/validation/rsid_falsepositive_check_2025jul25_v.01.tsv` | rsIDs from List 2 that incorrectly appear as pathogenic in final output (should be empty) |
+
+
+
 
 This workflow isolates strictly **pathogenic** ClinVar variants that overlap with rsIDs present on the Infinium Global Diversity Array. The resulting subset enables targeted downstream analysis, allowing for direct prioritization of clinically relevant loci within array-based genotyping data. It supports immediate integration into carrier screening pipelines and facilitates interpretation without requiring full reannotation from raw VCFs.
 
