@@ -178,7 +178,6 @@ grep -Fwf <(printf "%s\n" [RSIDs from list 2 here]) \
 
 **Result:**  
 The output file contained one entry, but was otherwise **empty**, confirming that no known benign or uncertain variants were incorrectly included in the final pathogenic-only set. **(Controls passing QC: 149/150)**
-
 ---
 
 ## Summary Table
@@ -193,6 +192,25 @@ The output file contained one entry, but was otherwise **empty**, confirming tha
 | Step 6   | Convert final VCF to TSV for downstream validation      | `dbSNP_variants_on_array_pathogenic_clinvar_grepmatch_2025jul24_v.01.tsv` |
 | Step 7   | Validate strict pathogenic entries (Nimisha List 1)     | `rsid_clinsig_validation_2025jul24_v.01.txt`                         |
 | Step 8   | Confirm exclusion of benign/uncertain variants (List 2) | `rsid_falsepositive_check_2025jul25_v.01.tsv`                        |
+
+### Pathogenic Variant Counts by Canonical Gene Symbol
+
+| GENE    | Pathogenic_Variant_Count |
+|---------|---------------------------|
+| BRCA2   | 1653                      |
+| BRCA1   | 1333                      |
+| PALB2   | 36                        |
+| RAD51D  | 5                         |
+| BRIP1   | 4                         |
+| RAD51C  | 4                         |
+| CRYGD   | 3                         |
+| BTD     | 2                         |
+| COL1A1  | 1                         |
+| FANCM   | 1                         |
+| KIF1A   | 1                         |
+| NF1     | 1                         |
+| TGFBR2  | 1                         |
+
 
 
 ## File Inventory: ClinVar Pathogenic rsID Array Matching (as of 25 July 2025)
