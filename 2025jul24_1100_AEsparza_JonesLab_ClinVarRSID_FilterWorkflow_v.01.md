@@ -193,7 +193,28 @@ The output file contained one entry, but was otherwise **empty**, confirming tha
 | Step 7   | Validate strict pathogenic entries (Nimisha List 1)     | `rsid_clinsig_validation_2025jul24_v.01.txt`                         |
 | Step 8   | Confirm exclusion of benign/uncertain variants (List 2) | `rsid_falsepositive_check_2025jul25_v.01.tsv`                        |
 
+### Count Pathogenic Variants by Canonical Gene Symbol
+
+The following `awk` command parses the `GENEINFO` field (column 8) from the filtered TSV file, extracts the canonical gene symbol (ignoring alternate IDs or multi-gene entries), and tallies the count of pathogenic variants per gene.
+
+```bash
+awk -F'\t' 'NR > 1 {
+  split($8, genes, "|");                # Split GENEINFO field on pipe
+  split(genes[1], symbol_id, ":");      # Extract canonical symbol
+  canonical[symbol_id[1]]++;           # Count by canonical gene symbol
+} END {
+  printf "%-10s\t%s\n", "GENE", "Pathogenic_Variant_Count"
+  for (g in canonical) {
+    printf "%-10s\t%d\n", g, canonical[g]
+  }
+}' /Users/austinesparza/Downloads/JonesLab/results/dbSNP_variants_on_array_pathogenic_clinvar_grepmatch_2025jul24_v.01.tsv \
+  | sort -k2,2nr \
+  > /Users/austinesparza/Downloads/JonesLab/results/dbSNP_Pathogenic_ByCanonicalGene_2025jul25_v.01.tsv
+```
+
+
 ### Pathogenic Variant Counts by Canonical Gene Symbol
+
 
 | GENE    | Pathogenic_Variant_Count |
 |---------|---------------------------|
