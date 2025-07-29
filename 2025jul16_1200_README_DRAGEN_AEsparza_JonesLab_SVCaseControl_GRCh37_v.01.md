@@ -323,6 +323,12 @@ Both input tables must include the fields:
 
 ---
 
+## Note on Inversions (INV)
+
+Although inversions (`INV`) were included as a structural variant type in both the Kolmogorov–Smirnov and Mann–Whitney U test workflows, no qualifying inversion events were present in the cleaned datasets for either cases or controls. This was verified using the chromosome-level SV summary table (`AEsparza_JonesLab_ChromSVTypeSummary_2025jul17_v.01.tsv`), where all values in the `num_INV` column were `0`. As such, statistical comparisons involving inversions were not performed, and this SV class is excluded from the final results.
+
+---
+
 | **Purpose**                                           | **Expected Filename**                                                    | **Intended Location**               |
 | ----------------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------------- |
 | Chromosome-level SV burden bar plot (all types)       | `AEsparza_JonesLab_ChromSVBarplot_case_2025jul28_v.01.png`               | `results/plots/`                    |
