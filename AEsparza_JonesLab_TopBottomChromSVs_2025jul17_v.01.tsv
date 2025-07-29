@@ -1,0 +1,13 @@
+group	chrom	total_sv_count
+case	chr1	1026503
+case	chr2	1014179
+case	chr6	840116
+case	chrM	28
+case	chrY	2718
+case	chr21	235695
+control	chr1	3176535
+control	chr2	3123131
+control	chr6	2579239
+control	chrM	53
+control	chrY	7935
+control	chr21	728390
