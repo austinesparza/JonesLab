@@ -143,6 +143,7 @@ The following tasks are planned based on the cleaned and harmonized datasets:
    - Total SV counts by chromosome, disaggregated by SV type.
    - Focus on top three and bottom three chromosomes by count.
 
+
 2. **SV Length Characterization**
    - Length range, median, and distribution plots for each SV type.
    - Case versus control comparisons.
@@ -155,16 +156,24 @@ The following tasks are planned based on the cleaned and harmonized datasets:
    - Bar plots (stacked?) of SV count per chromosome.
    - All visualizations stored in `results/plots/`.
 
-## Next Steps (As of July 22, 2025)
+
+##  AEsparza_JonesLab_ChromSVBarplot_case_2025jul28_v.01.png
+![SV Burden by Chrom and Type CASE]([image-url](https://github.com/austinesparza/JonesLab/blob/445b3cbc2925f3c8357d502348291b33566253a5/AEsparza_JonesLab_ChromSVBarplot_case_2025jul28_v.01.png))
+
+##  AEsparza_JonesLab_ChromSVBarplot_control_2025jul28_v.01.png
+![SV Burden by Chrom and Type CONTROL](https://github.com/austinesparza/JonesLab/blob/445b3cbc2925f3c8357d502348291b33566253a5/AEsparza_JonesLab_ChromSVBarplot_control_2025jul28_v.01.png)
+
+   
+## Next Steps (As of July 29, 2025)
 
 - [x] Clean and standardize DRAGEN-called SV files
 - [x] Merge case/control data with length and log transforms
 - [x] Split full catalog by chromosome × group
 - [x] Compute summary tables of SV burden and length ranges
 - [x] Visualize SV length distributions using violin plots
-- [ ] Visualize per-chromosome SV burden using bar plots
+- [x] Visualize per-chromosome SV burden using bar plots
 - [ ] Evaluate BND resolution failures (preliminary clustering analysis)
-- [ ] Apply statistical comparisons between case/control distributions (e.g., KS test, Wilcoxon)
+- [x] Apply statistical comparisons between case/control distributions (e.g., KS test, Wilcoxon)
 
 
 ## Notes
@@ -340,20 +349,22 @@ Although inversions (`INV`) were included as a structural variant type in both t
 | Cleaned SV data file (controls)                       | `AEsparza_JonesLab_CleanedControlsSV_2025jul17_v.02.tsv`                 | `data_processed/`                   |
 | Kolmogorov-Smirnov test results (DEL, DUP)            | `AEsparza_JonesLab_KSTest_SVLen_CaseControl_2025jul28_v.01.tsv`          | `results/stats/`                    |
 | Wilcoxon rank-sum test results (DEL, DUP)             | `AEsparza_JonesLab_WilcoxonTest_SVLen_CaseControl_2025jul28_v.01.tsv`    | `results/stats/`                    |
-| Combined SV master table (case + control, log-scaled) | `AEsparza_JonesLab_AllSVs_Cleaned_2025jul18_v.01.tsv`                    | `results/dataframes/`              |
+| Combined SV master table (case + control, log-scaled) | `AEsparza_JonesLab_AllSVs_Cleaned_2025jul18_v.01.tsv`                    | `results/dataframes/`               |
 | Statistical summary of SV length comparisons          | `AEsparza_JonesLab_SVLengthStats_StatTests_2025jul28_v.01.tsv`           | `results/tables/`                   |
-| Updated README with new figures and analysis summary  | `2025jul28_README_DRAGEN_AEsparza_JonesLab_SVCaseControl_GRCh37_v.04.md`| `./` (project root)                 |
+| Updated README with new figures and analysis summary  | `2025jul28_README_DRAGEN_AEsparza_JonesLab_SVCaseControl_GRCh37_v.04.md` | `./` (project root)                 |
 
 
 ## Document History
 
-| Version | Date       | Updates Summary                                                                                      |
-|---------|------------|-------------------------------------------------------------------------------------------------------|
-| v.01    | 2025-07-17 | Initial documentation of parsing workflow and objectives                                              |
-| v.02    | 2025-07-18 | Added merged master table                                                                             |
-| v.03    | 2025-07-22 | Split by group/chromosome, added SV type summaries, log-scaled lengths, etc.                          |
+| Version | Date       | Updates Summary                                                                                         |
+|---------|------------|---------------------------------------------------------------------------------------------------------|
+| v.01    | 2025-07-17 | Initial documentation of parsing workflow and objectives                                                |
+| v.02    | 2025-07-18 | Added merged master table                                                                               |
+| v.03    | 2025-07-22 | Split by group/chromosome, added SV type summaries, log-scaled lengths, etc.                            |
 | v.04    | 2025-07-28 | Generated SV burden bar plots (case/control, by SV type); performed KS and Wilcoxon tests on SV lengths |
+| v.05    | 2025-07-29 | SV burden bar plots (case/control, by SV type) uploaded to JonesLab repo, pathways in report            |
 
 
-**Current Version:** v.04  
+
+**Current Version:** v.05  
 **Maintainer:** Austin Esparza  
