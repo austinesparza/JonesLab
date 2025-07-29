@@ -230,12 +230,13 @@ To statistically compare the empirical distributions of structural variant lengt
 
 ---
 
-### Example Output (Preview)
+### KS Output
 
 | sv_type | ks_statistic | p_value     | n_case  | n_control |
 |---------|--------------|-------------|---------|-----------|
 | DEL     | 0.0193       | 0E+00       | 4840312 | 14760659  |
 | DUP     | 0.0263       | 8.3785E-23  | 46903   | 181494    |
+
 
 ---
 
@@ -247,25 +248,106 @@ To statistically compare the empirical distributions of structural variant lengt
 
 ---
 
+## Mann–Whitney U Test Summary: SV Lengths by Group  
+**Script**: `AEsparza_JonesLab_WilcoxonTest_SVLen_CaseControl_2025jul28_v.01.py`  
+**Objective**:  
+To compare the distribution of absolute structural variant (SV) lengths between cases and controls across three SV types (`DEL`, `DUP`, `INV`) using the non-parametric Mann–Whitney U test (Wilcoxon rank-sum).  
 
-| **Purpose**                                           | **Expected Filename**                                                    | **Intended Location** |
-| ----------------------------------------------------- | ------------------------------------------------------------------------ | --------------------- |
-| Chromosome-level SV burden bar plot (all types)       | `AEsparza_JonesLab_ChromSVBarplot_2025jul28_v.01.png`                    | `results/plots/`      |
-| Chromosome-level BND-specific SV burden plot          | `AEsparza_JonesLab_BND_BurdenBarplot_2025jul28_v.01.png`                 | `results/plots/`      |
-| Statistical test output (KS and Wilcoxon)             | `AEsparza_JonesLab_CaseControl_KS_Wilcoxon_Results_2025jul28_v.01.tsv`   | `results/tables/`     |
-| Combined SV master table (case + control, log-scaled) | `AEsparza_JonesLab_AllSVs_Cleaned_2025jul18_v.01.tsv`                    | `results/dataframes/` |
-| Statistical summary of SV length comparisons          | `AEsparza_JonesLab_SVLengthStats_StatTests_2025jul28_v.01.tsv`           | `results/tables/`     |
-| Updated README version with new results and visuals   | `2025jul28_README_DRAGEN_AEsparza_JonesLab_SVCaseControl_GRCh37_v.04.md` | `./` (project root)   |
+---
+
+### Inputs  
+
+| Filepath | Description |
+|----------|-------------|
+| `data_processed/AEsparza_JonesLab_CleanedCasesSV_2025jul17_v.03.tsv` | Cleaned SV call table for case samples |
+| `data_processed/AEsparza_JonesLab_CleanedControlsSV_2025jul17_v.02.tsv` | Cleaned SV call table for control samples |
+
+Both input tables must include the fields:  
+- `sv_type`: categorical (e.g. DEL, DUP, INV)  
+- `sv_len_abs`: numeric absolute SV length (precomputed, required for test)
+
+---
+
+### Workflow  
+
+1. **Load data**:  
+   Case and control files are read using `pandas.read_csv()`, with tab-delimited format.
+
+2. **Loop through SV types**:  
+   For each SV type of interest:
+   - Subset lengths for that type in cases and controls
+   - Drop missing (`NaN`) values
+   - Skip test if either group is empty
+
+3. **Perform test**:  
+   Run `scipy.stats.mannwhitneyu()` with `alternative='two-sided'`.
+
+4. **Record results**:  
+   Save `u_statistic`, `p_value`, and sample sizes per group to a structured results dictionary.
+
+5. **Export results**:  
+   Output is written to:
+
+   ```
+   results/stats/AEsparza_JonesLab_WilcoxonTest_SVLen_CaseControl_2025jul28_v.01.tsv
+   ```
+
+---
+
+### Output Columns  
+
+| Column | Description |
+|--------|-------------|
+| `sv_type` | Structural variant type (DEL, DUP, INV) |
+| `u_statistic` | Mann–Whitney U test statistic |
+| `p_value` | P-value for difference in SV length distributions |
+| `n_case` | Number of case SVs tested |
+| `n_control` | Number of control SVs tested |
+
+---
+
+### Wilcoxon Output
+
+| sv_type | u_statistic     | p_value    | n_case  | n_control |
+|---------|------------------|------------|---------|-----------|
+| DEL     | 35078845316775   | 0E+00      | 4840312 | 14760659  |
+| DUP     | 4354776315       | 1.025E-14  | 46903   | 181494    |
+
+---
+
+### Notes  
+
+- The Mann–Whitney U test does not assume normality and is suitable for highly skewed distributions such as SV lengths.
+- SV types with no data in either group are skipped with an explicit log message.
+- This test complements the Kolmogorov–Smirnov (KS) test by comparing rank distributions rather than cumulative distribution shapes.
+
+---
+
+| **Purpose**                                           | **Expected Filename**                                                    | **Intended Location**               |
+| ----------------------------------------------------- | ------------------------------------------------------------------------ | ----------------------------------- |
+| Chromosome-level SV burden bar plot (all types)       | `AEsparza_JonesLab_ChromSVBarplot_case_2025jul28_v.01.png`               | `results/plots/`                    |
+| Chromosome-level SV burden bar plot (all types)       | `AEsparza_JonesLab_ChromSVBarplot_control_2025jul28_v.01.png`            | `results/plots/`                    |
+| BND-only SV bar plot (case)                           | `AEsparza_JonesLab_BND_Barplot_case_2025jul28_v.01.png`                  | `results/plots/`                    |
+| BND-only SV bar plot (control)                        | `AEsparza_JonesLab_BND_Barplot_control_2025jul28_v.01.png`               | `results/plots/`                    |
+| SV type-specific burden bar plots (BND, DEL, DUP, INV)| `AEsparza_JonesLab_<SVTYPE>_BurdenByChrom_2025jul28_v.01.png`            | `results/plots/svtype_comparison/`  |
+| Cleaned SV data file (cases)                          | `AEsparza_JonesLab_CleanedCasesSV_2025jul17_v.03.tsv`                    | `data_processed/`                   |
+| Cleaned SV data file (controls)                       | `AEsparza_JonesLab_CleanedControlsSV_2025jul17_v.02.tsv`                 | `data_processed/`                   |
+| Kolmogorov-Smirnov test results (DEL, DUP)            | `AEsparza_JonesLab_KSTest_SVLen_CaseControl_2025jul28_v.01.tsv`          | `results/stats/`                    |
+| Wilcoxon rank-sum test results (DEL, DUP)             | `AEsparza_JonesLab_WilcoxonTest_SVLen_CaseControl_2025jul28_v.01.tsv`    | `results/stats/`                    |
+| Combined SV master table (case + control, log-scaled) | `AEsparza_JonesLab_AllSVs_Cleaned_2025jul18_v.01.tsv`                    | `results/dataframes/`              |
+| Statistical summary of SV length comparisons          | `AEsparza_JonesLab_SVLengthStats_StatTests_2025jul28_v.01.tsv`           | `results/tables/`                   |
+| Updated README with new figures and analysis summary  | `2025jul28_README_DRAGEN_AEsparza_JonesLab_SVCaseControl_GRCh37_v.04.md`| `./` (project root)                 |
 
 
 ## Document History
 
-| Version | Date       | Updates Summary                                                              |
-|---------|------------|-------------------------------------------------------------------------------|
-| v.01    | 2025-07-17 | Initial documentation of parsing workflow and objectives                     |
-| v.02    | 2025-07-18 | Added merged master table
- |
-| v.03    | 2025-07-22 | Split by group/chromosome, added SV type summaries, log-scaled lengths, etc. |
+| Version | Date       | Updates Summary                                                                                      |
+|---------|------------|-------------------------------------------------------------------------------------------------------|
+| v.01    | 2025-07-17 | Initial documentation of parsing workflow and objectives                                              |
+| v.02    | 2025-07-18 | Added merged master table                                                                             |
+| v.03    | 2025-07-22 | Split by group/chromosome, added SV type summaries, log-scaled lengths, etc.                          |
+| v.04    | 2025-07-28 | Generated SV burden bar plots (case/control, by SV type); performed KS and Wilcoxon tests on SV lengths |
 
-**Current Version:** v.03  
+
+**Current Version:** v.04  
 **Maintainer:** Austin Esparza  
