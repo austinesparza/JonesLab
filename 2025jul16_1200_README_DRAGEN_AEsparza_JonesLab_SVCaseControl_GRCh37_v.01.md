@@ -187,6 +187,67 @@ The initial analytical scope is defined by the following tasks:
 
 The aim of this work is to inform the design of scalable, reproducible SV analysis workflows that are compatible with other GRCh37-based datasets, including genotyping arrays such as the Infinium Global Diversity Array. All coordinate systems and annotations remain GRCh37-specific. Visualization strategies are selected to prioritize clarity, interpretability, and publication-quality output. This document will be expanded as additional input files are incorporated or as analytical priorities shift.
 
+## KS Test Summary: Structural Variant Length Distributions (Cases vs Controls)
+ 
+**Script:** `AEsparza_JonesLab_KSTest_SVLen_CaseControl_2025jul28_v.01.py`  
+**Directory:** `scripts/`  
+**Output:** `results/stats/AEsparza_JonesLab_KSTest_SVLen_CaseControl_2025jul28_v.01.tsv`  
+**Purpose:** Assess whether the distribution of SV lengths differs between cases and controls using the two-sample Kolmogorov–Smirnov (KS) test.
+
+---
+
+### Objective
+
+To statistically compare the empirical distributions of structural variant lengths (`sv_len_abs`) between case and control cohorts across three SV types: deletions (DEL), duplications (DUP), and inversions (INV). Breakends (BND) were excluded from this analysis due to lack of resolution and ambiguous lengths.
+
+---
+
+### Methods
+
+1. **Data Input**
+   - **Cases File:** `data_processed/AEsparza_JonesLab_CleanedCasesSV_2025jul17_v.03.tsv`
+   - **Controls File:** `data_processed/AEsparza_JonesLab_CleanedControlsSV_2025jul17_v.02.tsv`
+   - Input files must include:
+     - `sv_type`: structural variant type (e.g., DEL, DUP, INV)
+     - `sv_len_abs`: absolute length of the variant
+
+2. **Filtering Logic**
+   - For each SV type (`DEL`, `DUP`, `INV`):
+     - Subset lengths using `df[df["sv_type"] == sv]["sv_len_abs"].dropna()`
+     - Skip SV type if either group is empty
+
+3. **KS Test Execution**
+   - Performed with `scipy.stats.ks_2samp` to test the null hypothesis that the distributions of variant lengths are the same in cases and controls
+   - Reports:
+     - KS statistic (magnitude of distributional difference)
+     - P-value (statistical significance)
+     - Sample sizes per group
+
+4. **Output**
+   - Results saved in TSV format:
+     - Columns: `sv_type`, `ks_statistic`, `p_value`, `n_case`, `n_control`
+     - File: `results/stats/AEsparza_JonesLab_KSTest_SVLen_CaseControl_2025jul28_v.01.tsv`
+
+---
+
+### Example Output (Preview)
+
+| sv_type | ks_statistic | p_value     | n_case  | n_control |
+|---------|--------------|-------------|---------|-----------|
+| DEL     | 0.0193       | 0E+00       | 4840312 | 14760659  |
+| DUP     | 0.0263       | 8.3785E-23  | 46903   | 181494    |
+
+---
+
+### Interpretation
+
+- The extremely low p-values indicate a statistically significant difference in SV length distributions between cases and controls for both DEL and DUP.
+- The KS statistics are small, suggesting modest effect sizes—appropriate given large sample sizes.
+- This supports further characterization or stratification by genomic context or clinical phenotype, and suggests SV size distributions may offer subtle but real biological signal between groups.
+
+---
+
+
 | **Purpose**                                           | **Expected Filename**                                                    | **Intended Location** |
 | ----------------------------------------------------- | ------------------------------------------------------------------------ | --------------------- |
 | Chromosome-level SV burden bar plot (all types)       | `AEsparza_JonesLab_ChromSVBarplot_2025jul28_v.01.png`                    | `results/plots/`      |
