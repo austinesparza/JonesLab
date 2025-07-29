@@ -158,7 +158,7 @@ The following tasks are planned based on the cleaned and harmonized datasets:
 
 
 ##  AEsparza_JonesLab_ChromSVBarplot_case_2025jul28_v.01.png
-![SV Burden by Chrom and Type CASE]([image-url](https://github.com/austinesparza/JonesLab/blob/445b3cbc2925f3c8357d502348291b33566253a5/AEsparza_JonesLab_ChromSVBarplot_case_2025jul28_v.01.png))
+![SV Burden by Chrom and Type CASE](https://github.com/austinesparza/JonesLab/blob/445b3cbc2925f3c8357d502348291b33566253a5/AEsparza_JonesLab_ChromSVBarplot_case_2025jul28_v.01.png)
 
 ##  AEsparza_JonesLab_ChromSVBarplot_control_2025jul28_v.01.png
 ![SV Burden by Chrom and Type CONTROL](https://github.com/austinesparza/JonesLab/blob/445b3cbc2925f3c8357d502348291b33566253a5/AEsparza_JonesLab_ChromSVBarplot_control_2025jul28_v.01.png)
