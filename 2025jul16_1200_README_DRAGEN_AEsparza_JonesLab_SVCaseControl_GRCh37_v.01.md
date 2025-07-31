@@ -133,6 +133,13 @@ All files follow this convention:
 | `AEsparza_JonesLab_SVLengthRange_DEL_DUP_INV_2025jul17_v.01.tsv`        | Raw and log-scaled length ranges            |
 | `AEsparza_JonesLab_TopBottomChromSVs_2025jul17_v.01.tsv`                | Top/bottom 3 chromosomes by burden          |
 
+## AEsparza_JonesLab_SVLengthStats_AllTypes_2025jul17_v.01
+![AEsparza_JonesLab_SVLengthStats_AllTypes_2025jul17_v.01] <img width="812" height="273" alt="image" src="https://github.com/user-attachments/assets/f6127cb1-00f5-4f9f-bd36-62e59dd1a9ca" />
+
+## AEsparza_JonesLab_TopBottomChromSVs_2025jul17_v.01
+![AEsparza_JonesLab_TopBottomChromSVs_2025jul17_v.01] <img width="220" height="373" alt="image" src="https://github.com/user-attachments/assets/034173ba-565e-45cd-a392-62e21278453b" />
+
+
 ---
 
 ## Analytical Objectives
