@@ -336,6 +336,208 @@ Both input tables must include the fields:
 
 Although inversions (`INV`) were included as a structural variant type in both the Kolmogorov–Smirnov and Mann–Whitney U test workflows, no qualifying inversion events were present in the cleaned datasets for either cases or controls. This was verified using the chromosome-level SV summary table (`AEsparza_JonesLab_ChromSVTypeSummary_2025jul17_v.01.tsv`), where all values in the `num_INV` column were `0`. As such, statistical comparisons involving inversions were not performed, and this SV class is excluded from the final results.
 
+
+**Script:** `AEsparza_JonesLab_SVComparison_NormalizedPlot_2025jul30_v.01.py`  
+**Genome Build:** GRCh37  
+
+---
+
+## Objective
+
+Quantify and compare the burden of structural variants (SVs) per chromosome between:
+
+- **case_DRAGEN**: Case samples (n = 1016) processed via DRAGEN-based SV calling
+- **gnomAD**: Publicly available structural variant dataset from population controls (n = 14,891)
+
+SV counts are normalized by both sample size and chromosome length to yield:  
+**SVs per sample per megabase (Mb)** — a metric allowing intra-cohort chromosomal burden comparison.
+
+**Note:** Due to differences in SV detection algorithms, definitions, and quality filters between pipelines, comparisons across datasets are approximate and **should not be interpreted as absolute biological differences.**
+
+---
+
+## Input Files
+
+**Primary TSV:**  
+`AEsparza_JonesLab_SVComparison_NoChrM_CaseGnomAD_2025jul30_v.01.tsv`  
+- Fields: `chrom`, `group`, `total_SVs`
+
+**Chromosome Sizes:**  
+Reference values for GRCh37 autosomes and sex chromosomes (Mb). Stored internally in script.
+
+---
+
+## Normalization Formula
+
+```python
+SVs_per_sample_per_Mb = total_SVs / (sample_count × chrom_size_mb)
+```
+
+- `total_SVs`: SV count per chromosome  
+- `sample_count`: 14891 for gnomAD; 1016 for DRAGEN  
+- `chrom_size_mb`: Chromosome length in megabases (from GRCh37)  
+- Rounded to six decimal places for clarity
+
+---
+
+## Output Files
+
+**Normalized SV Table:**  
+`AEsparza_JonesLab_SVComparison_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.tsv`
+
+**Plot Outputs:**  
+- PNG: `AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png`  
+- PDF: `AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.pdf`
+
+---
+
+## Visualization Description
+
+Two vertically stacked barplots were generated:
+
+1. **Top Panel:**  
+   - Y-axis: `SVs_per_sample_per_Mb`  
+   - X-axis: Chromosomes 1–22, X, Y  
+   - Grouped by dataset (gnomAD, case_DRAGEN)  
+   - Color-coded (`Set2`)  
+
+2. **Bottom Panel:**  
+   - Chromosome size (Mb) from GRCh37  
+   - Contextual reference for normalization
+
+**Standard deviation (SD) error bars were not plotted**, as the input data was aggregated per chromosome and did not include replicate variance. SD bars can be incorporated if raw replicate-level data is introduced in future analyses.
+
+---
+##  AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png
+![AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png](https://github.com/austinesparza/JonesLab/blob/e7de49aedf3b5ee5dd991354432fdbd34238c013/AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png)
+
+
+## Observations
+
+- **DRAGEN cohort** shows a consistent ~4–6 SVs/sample/Mb across most chromosomes, with chromosome 19 peaking above 6.5.  
+- **gnomAD burden** appears markedly lower, typically around ~0.04–0.05 SVs/sample/Mb.
+
+This is expected due to:
+- Conservative SV definitions in gnomAD  
+- Filtering of low-confidence and rare variants  
+- Cohort health status (controls)
+
+**Interpretation should focus on relative chromosomal patterns rather than absolute SV burden across datasets.**
+
+---
+
+## File Structure Summary
+
+```
+/results/
+├── plots/
+│   ├── AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png
+│   └── AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.pdf
+└── tables/
+    ├── AEsparza_JonesLab_SVComparison_NoChrM_CaseGnomAD_2025jul30_v.01.tsv
+    └── AEsparza_JonesLab_SVComparison_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.tsv
+```
+
+---
+
+## Script Location
+
+```bash
+/scripts/AEsparza_JonesLab_SVComparison_NormalizedPlot_2025jul30_v.01.py
+```
+
+---
+
+## Future Directions
+
+- Recompute normalized rates with callable base-pair coverage instead of chromosome length  
+- Add replicate-level data to compute error bars  
+- Stratify by SV type (DEL, DUP, INV, INS) and size classes  
+- Extend to additional cohorts for multi-arm comparison
+
+## Objective
+
+Assess the unresolved structural variant burden (BNDs) across chromosomes, comparing:
+
+- **case_DRAGEN**: Case cohort (n = 1016) with SVs called via DRAGEN  
+- **control_DRAGEN**: Control cohort (n = 2,945 ) with SVs called via DRAGEN
+
+BNDs (breakends) represent imprecisely resolved structural variants lacking definitive breakpoint mapping. While often excluded from clinical interpretation, they may reflect technical artifacts or alignment instability across genomic regions. This figure evaluates chromosomal BND distribution in both groups to flag potential bias or quality control concerns.
+
+---
+
+## Input Files
+
+**BND Summary Table:**  
+`AEsparza_JonesLab_ChromSVTypeSummary_2025jul17_v.01.tsv`  
+- Fields used: `chrom`, `group`, `SVTYPE`, `count`
+
+> All chromosomes were included (chr1–22, chrX, chrY, chrM). Only rows where `SVTYPE == BND` were used in this analysis.
+
+---
+
+## Plot Output
+
+**BND Burden Barplot:**  
+`AEsparza_JonesLab_BNDChromBurdenPlot_2025jul30_v.01.png`  
+- Y-axis: BND count  
+- X-axis: Chromosome (ordered 1–22, X, Y, M)  
+- Bars grouped by cohort (case, control)  
+- Color scheme: seaborn default, with legend for group
+
+##  AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png
+![AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png](https://github.com/austinesparza/JonesLab/blob/AEsparza_WorkingFiles_Tables_Images/AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png)
+---
+
+## Visualization Description
+
+Grouped barplot showing raw BND counts per chromosome:
+
+- Prominent BND inflation in chr1, chr2, chr5, chr13, and chr20.
+- Mitochondrial (chrM) and sex chromosomes (chrY) show negligible counts.
+- No normalization was applied, as this was a raw burden check for artifact detection.
+
+---
+
+## Observations
+
+| Finding | Interpretation |
+|--------|----------------|
+| **Controls exhibit 2–4× higher BND counts** 
+| **Specific spike regions (chr1, chr2, chr5, chr13)** | May correspond to segmental duplications, centromeric gaps, or other regions prone to mapping ambiguity |
+| **Cases show consistently lower BND rates** | DRAGEN pipeline may be more conservative in reporting unresolved SVs |
+
+BNDs are typically **uninformative for biological association testing** due to lack of breakpoint resolution. This analysis supports **excluding BNDs from downstream burden analyses** or handling them separately as potential pipeline artifacts.
+
+---
+
+## File Structure Summary
+
+```
+/results/
+├── plots/
+│   └── AEsparza_JonesLab_BNDChromBurdenPlot_2025jul30_v.01.png
+└── tables/
+    └── AEsparza_JonesLab_ChromSVTypeSummary_2025jul17_v.01.tsv
+```
+
+---
+
+## Script Location
+
+```bash
+/scripts/AEsparza_JonesLab_BNDChromBurdenPlot_2025jul30_v.01.py
+```
+
+---
+
+## Next Steps
+
+- Calculate BND **proportion per chromosome**: `BND count / total SVs`  
+- Repeat analysis using **DEL, DUP, INS, INV** for comparative context  
+- Consider masking BNDs in chromosomal SV burden models  
+- Reassess BND distribution after filtering for high-confidence regions or mappability tracks
+
 ---
 
 | **Purpose**                                           | **Expected Filename**                                                    | **Intended Location**               |
