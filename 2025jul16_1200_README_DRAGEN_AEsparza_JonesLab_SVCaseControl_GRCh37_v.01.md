@@ -408,8 +408,8 @@ Two vertically stacked barplots were generated:
 **Standard deviation (SD) error bars were not plotted**, as the input data was aggregated per chromosome and did not include replicate variance. SD bars can be incorporated if raw replicate-level data is introduced in future analyses.
 
 ---
-##  AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png
-![AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png](https://github.com/austinesparza/JonesLab/blob/e7de49aedf3b5ee5dd991354432fdbd34238c013/AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png)
+##  AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png
+![AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png](https://github.com/austinesparza/JonesLab/blob/e7de49aedf3b5ee5dd991354432fdbd34238c013/AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png)
 
 
 ## Observations
