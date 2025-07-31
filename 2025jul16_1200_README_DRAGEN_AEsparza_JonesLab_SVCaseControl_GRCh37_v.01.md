@@ -409,7 +409,7 @@ Two vertically stacked barplots were generated:
 
 ---
 ##  AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png
-![AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png](https://github.com/austinesparza/JonesLab/blob/e7de49aedf3b5ee5dd991354432fdbd34238c013/AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png)
+![AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png](https://github.com/austinesparza/JonesLab/blob/AEsparza_WorkingFiles_Tables_Images/AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png)
 
 
 ## Observations
