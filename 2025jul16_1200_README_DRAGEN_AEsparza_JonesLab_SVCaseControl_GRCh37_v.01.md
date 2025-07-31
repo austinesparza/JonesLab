@@ -487,15 +487,10 @@ BNDs (breakends) represent imprecisely resolved structural variants lacking defi
 
 ##  AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png
 ![AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png](https://github.com/austinesparza/JonesLab/blob/AEsparza_WorkingFiles_Tables_Images/AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png)
----
 
-## Visualization Description
 
-Grouped barplot showing raw BND counts per chromosome:
-
-- Prominent BND inflation in chr1, chr2, chr5, chr13, and chr20.
-- Mitochondrial (chrM) and sex chromosomes (chrY) show negligible counts.
-- No normalization was applied, as this was a raw burden check for artifact detection.
+##  AEsparza_WorkingFiles_Tables_Images/AEsparza_JonesLab_BND_ChromBurden_Normalized_2025jul30_v.02.png
+![AEsparza_WorkingFiles_Tables_Images/AEsparza_JonesLab_BND_ChromBurden_Normalized_2025jul30_v.02.png](https://github.com/austinesparza/JonesLab/blob/AEsparza_WorkingFiles_Tables_Images/AEsparza_JonesLab_BND_ChromBurden_Normalized_2025jul30_v.02.png)
 
 ---
 
