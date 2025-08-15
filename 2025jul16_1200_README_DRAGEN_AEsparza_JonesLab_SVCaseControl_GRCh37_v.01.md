@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project aims to characterize germline structural variant (SV) patterns using DRAGEN-called data from a case-control cohort, provided by Nimisha. The data are aligned to the GRCh38 reference genome and focus on deletions, duplications, inversions, and unresolved breakends (BNDs). This analysis is conducted in support of downstream work associated with the Infinium Global Diversity Array and requires consistent preprocessing and standardized outputs.
+This project aims to characterize germline structural variant (SV) patterns using DRAGEN-called data from a case-control cohort, provided by Nimisha. The data are aligned to the GRCh38 reference genome and focus on deletions, duplications, inversions, and unresolved breakends (BNDs).
 
 
 
@@ -15,12 +15,11 @@ Nimisha provided two DRAGEN-called SV files representing case and control cohort
 3. Include unresolved variants (breakends, or BNDs) in burden counts. Consider potential reasons for lack of resolution and evaluate chromosome-level clustering.
 4. Recommend appropriate visualizations for summarizing the above trends.
 
-All work must remain GRCh37-specific to ensure compatibility with the Global Diversity Array platform.
 
 # Jones Lab SV Standardization Summary  
 **Project:** *Discovery of Rare Germline Structural Variants in Epithelial Ovarian Cancer*  
 **Date:** July 17, 2025  
-**Analyst:** Austin Esparza  
+**Author:** Austin Esparza  
 
 # Requirements
 pandas>=1.3.0
@@ -37,39 +36,107 @@ All analysis was performed on a local workstation (macOS 10.15.7) using Python 3
 ## Directory Structure
 
 ```
-SV_Exploration_2025jul15/
-├── data_raw/
-│ ├── all_cases.dragen.sv.txt
-│ └── all_controls.dragen.sv.txt
-├── data_processed/
-│ ├── AEsparza_JonesLab_CleanedCasesSV_.tsv
-│ └── AEsparza_JonesLab_CleanedControlsSV_.tsv
-├── results/
-│ ├── AEsparza_JonesLab_ChromSVCounts_.tsv
-│ ├── AEsparza_JonesLab_SVTypeSummary_.tsv
-│ ├── plots/
-│ │ └── AEsparza_JonesLab_SVLEN_ViolinPlot_.png
-│ ├── tables/
-│ │ ├── AEsparza_JonesLab_SVLengthRange_.tsv
-│ │ ├── AEsparza_JonesLab_SVLengthStats_.tsv
-│ │ ├── AEsparza_JonesLab_TopBottomChromSVs_.tsv
-│ │ └── AEsparza_JonesLab_ChromSVTypeSummary_.tsv
-│ └── dataframes/
-│ ├── AEsparza_JonesLab_AllSVs_Cleaned_.tsv
-│ ├── AllSVs_Case/
-│ │ └── AEsparza_JonesLab_SVCatalog_case_chr*.tsv
-│ └── AllSVs_Control/
-│ └── AEsparza_JonesLab_SVCatalog_control_chr*.tsv
-├── scripts/
-│ ├── AEsparza_JonesLab_ParseCasesSV_.py
-│ ├── AEsparza_JonesLab_ParseControlsSV_.py
-│ ├── AEsparza_JonesLab_SVSummary_.py
-│ ├── AEsparza_JonesLab_SVStats_Tables_.py
-│ ├── AEsparza_JonesLab_SVLengthRange_.py
-│ └── AEsparza_JonesLab_SplitSVs_ByGroupAndChrom_.py
-└── logs/
+SV_Exploration_2025jul15
+├── 1kgp
+│   ├── 1kgp_raw_extract.tsv
+│   ├── ALL.autosomes.pindel.20130502.complexindex.low_coverage.genotypes.vcf.gz
+│   ├── ALL.autosomes.pindel.20130502.complexindex.low_coverage.genotypes.vcf.gz.tbi
+│   ├── ALL.wgs.mergedSV.v8.20130502.svs.genotypes.vcf.gz
+│   ├── ALL.wgs.mergedSV.v8.20130502.svs.genotypes.vcf.gz.tbi
+│   └── README_phase3_sv_callset_20150224
+├── Gnomad_SV_VCF
+│   ├── BND_ChrBurden_CaseControl_DRAGEN_2025aug04.png
+│   ├── gnomad.v4.1.sv.sites.vcf.gz
+│   ├── gnomad.v4.1.sv.sites.working.vcf.gz
+│   ├── gnomad_raw_extract.tsv
+│   ├── gnomad_raw_extract.with_ids_2025jul30_v.01.tsv
+│   └── gnomad_raw_extract.working.tsv
+├── clinvar_pathogenic_variants_per_gene.png
+├── data_processed
+├── data_raw
+├── logs
+├── results
+│   ├── dataframes
+│   │   ├── AEsparza_JonesLab_AllSVs_Cleaned_2025jul18_v.01.tsv
+│   │   ├── AllSVs_1kgp
+│   │   │   ├── SVs_1kgp_chr10_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr11_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr12_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr13_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr14_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr15_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr16_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr17_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr18_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr19_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr1_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr20_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr21_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr22_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr2_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr3_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr4_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr5_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr6_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr7_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr8_2025jul29_v.01.tsv
+│   │   │   ├── SVs_1kgp_chr9_2025jul29_v.01.tsv
+│   │   │   └── SVs_1kgp_chrX_2025jul29_v.01.tsv
+│   │   ├── AllSVs_Case
+│   │   ├── AllSVs_Control
+│   │   └── AllSVs_gnomad
+│   │       ├── gnomad_chr10_sv.tsv
+│   │       ├── gnomad_chr10_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr11_sv.tsv
+│   │       ├── gnomad_chr11_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr12_sv.tsv
+│   │       ├── gnomad_chr12_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr13_sv.tsv
+│   │       ├── gnomad_chr13_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr14_sv.tsv
+│   │       ├── gnomad_chr14_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr15_sv.tsv
+│   │       ├── gnomad_chr15_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr16_sv.tsv
+│   │       ├── gnomad_chr16_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr17_sv.tsv
+│   │       ├── gnomad_chr17_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr18_sv.tsv
+│   │       ├── gnomad_chr18_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr19_sv.tsv
+│   │       ├── gnomad_chr19_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr1_sv.tsv
+│   │       ├── gnomad_chr1_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr20_sv.tsv
+│   │       ├── gnomad_chr20_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr21_sv.tsv
+│   │       ├── gnomad_chr21_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr22_sv.tsv
+│   │       ├── gnomad_chr22_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr2_sv.tsv
+│   │       ├── gnomad_chr2_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr3_sv.tsv
+│   │       ├── gnomad_chr3_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr4_sv.tsv
+│   │       ├── gnomad_chr4_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr5_sv.tsv
+│   │       ├── gnomad_chr5_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr6_sv.tsv
+│   │       ├── gnomad_chr6_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr7_sv.tsv
+│   │       ├── gnomad_chr7_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr8_sv.tsv
+│   │       ├── gnomad_chr8_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chr9_sv.tsv
+│   │       ├── gnomad_chr9_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chrX_sv.tsv
+│   │       ├── gnomad_chrX_sv_2025jul29_v.02.tsv
+│   │       ├── gnomad_chrY_sv.tsv
+│   │       └── gnomad_chrY_sv_2025jul29_v.02.tsv
 
-11 directories, 85 files
+```
+**Total:** 17 directories, 229 files
+
 
 ```
 ---
@@ -91,7 +158,6 @@ SV_Exploration_2025jul15/
   - `sv_len_abs`: Absolute value of SV length
 - Metadata fields added:
   - `caller = DRAGEN`
-  - `build = GRCh37`
   - `source_group = case` or `control`
 - Output format: Cleaned `.tsv` files with consistent column names and structure
 
@@ -180,7 +246,6 @@ The following tasks are planned based on the cleaned and harmonized datasets:
 - [x] Compute summary tables of SV burden and length ranges
 - [x] Visualize SV length distributions using violin plots
 - [x] Visualize per-chromosome SV burden using bar plots
-- [ ] Evaluate BND resolution failures (preliminary clustering analysis)
 - [x] Apply statistical comparisons between case/control distributions (e.g., KS test, Wilcoxon)
 
 
@@ -261,7 +326,7 @@ To statistically compare the empirical distributions of structural variant lengt
 
 - The extremely low p-values indicate a statistically significant difference in SV length distributions between cases and controls for both DEL and DUP.
 - The KS statistics are small, suggesting modest effect sizes—appropriate given large sample sizes.
-- This supports further characterization or stratification by genomic context or clinical phenotype, and suggests SV size distributions may offer subtle but real biological signal between groups.
+- This supports further characterization or stratification by genomic context or clinical phenotype.
 
 ---
 
@@ -355,8 +420,7 @@ Although inversions (`INV`) were included as a structural variant type in both t
 Quantify and compare the burden of structural variants (SVs) per chromosome between:
 
 - **case_DRAGEN**: Case samples (n = 1016) processed via DRAGEN-based SV calling
-- **gnomAD**: Publicly available structural variant dataset from population controls (n = 14,891)
-
+- **control_DRAGEN**: control samples (n = 2,945) processed via DRAGEN-based SV calling
 SV counts are normalized by both sample size and chromosome length to yield:  
 **SVs per sample per megabase (Mb)** — a metric allowing intra-cohort chromosomal burden comparison.
 
@@ -371,7 +435,7 @@ SV counts are normalized by both sample size and chromosome length to yield:
 - Fields: `chrom`, `group`, `total_SVs`
 
 **Chromosome Sizes:**  
-Reference values for GRCh37 autosomes and sex chromosomes (Mb). Stored internally in script.
+Reference values for GRCh38 autosomes and sex chromosomes (Mb). Stored internally in script.
 
 ---
 
@@ -383,7 +447,7 @@ SVs_per_sample_per_Mb = total_SVs / (sample_count × chrom_size_mb)
 
 - `total_SVs`: SV count per chromosome  
 - `sample_count`: 14891 for gnomAD; 1016 for DRAGEN  
-- `chrom_size_mb`: Chromosome length in megabases (from GRCh37)  
+- `chrom_size_mb`: Chromosome length in megabases (from GRCh38)  
 - Rounded to six decimal places for clarity
 
 ---
@@ -410,7 +474,7 @@ Two vertically stacked barplots were generated:
    - Color-coded (`Set2`)  
 
 2. **Bottom Panel:**  
-   - Chromosome size (Mb) from GRCh37  
+   - Chromosome size (Mb) from GRCh38  
    - Contextual reference for normalization
 
 **Standard deviation (SD) error bars were not plotted**, as the input data was aggregated per chromosome and did not include replicate variance. SD bars can be incorporated if raw replicate-level data is introduced in future analyses.
@@ -571,5 +635,5 @@ BNDs are typically **uninformative for biological association testing** due to l
 
 
 
-**Current Version:** v.05  
+**Current Version:** v.06  
 **Maintainer:** Austin Esparza  
