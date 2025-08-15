@@ -33,10 +33,10 @@ python-dateutil>=2.8.0
 ## Environment Notes
 All analysis was performed on a local workstation (macOS 10.15.7) using Python 3.9. Packages were managed via `pip`. Scripts are compatible with Unix-style paths and assume availability of standard command-line utilities (e.g., `cat`, `wc`, `sort`) for optional audit steps.
 
-## Directory Structure
-
 ```
-SV_Exploration_2025jul15
+
+Austins-MacBook-Pro:~ austinesparza$ tree /Users/austinesparza/Downloads/JonesLab/SV_Exploration_2025jul15
+/Users/austinesparza/Downloads/JonesLab/SV_Exploration_2025jul15
 ├── 1kgp
 │   ├── 1kgp_raw_extract.tsv
 │   ├── ALL.autosomes.pindel.20130502.complexindex.low_coverage.genotypes.vcf.gz
@@ -133,10 +133,158 @@ SV_Exploration_2025jul15
 │   │       ├── gnomad_chrX_sv_2025jul29_v.02.tsv
 │   │       ├── gnomad_chrY_sv.tsv
 │   │       └── gnomad_chrY_sv_2025jul29_v.02.tsv
+│   ├── plots
+│   │   ├── AEsparza_JonesLab_1KGP_SVTypes_ByChrom_2025jul29_v.01.png
+│   │   ├── AEsparza_JonesLab_1KGP_TotalSVs_ByChrom_2025jul29_v.03.png
+│   │   ├── AEsparza_JonesLab_BND_Barplot_case_2025jul28_v.01.png
+│   │   ├── AEsparza_JonesLab_BND_Barplot_control_2025jul28_v.01.png
+│   │   ├── AEsparza_JonesLab_BND_ChromBurden_CaseControl_2025jul30_v.01.png
+│   │   ├── AEsparza_JonesLab_BND_ChromBurden_Normalized_2025aug04_v.03.png
+│   │   ├── AEsparza_JonesLab_BND_ChromBurden_Normalized_2025jul30_v.02.png
+│   │   ├── AEsparza_JonesLab_ChromSVBarplot_case_2025jul28_v.01.png
+│   │   ├── AEsparza_JonesLab_ChromSVBarplot_case_2025jul29_v.01.png
+│   │   ├── AEsparza_JonesLab_ChromSVBarplot_control_2025jul28_v.01.png
+│   │   ├── AEsparza_JonesLab_ChromSVCounts_2025jul15_v.01.tsv
+│   │   ├── AEsparza_JonesLab_SVCountDistributionViolin_2025jul29_v.01.png
+│   │   ├── AEsparza_JonesLab_SVCount_BoxVsViolin_2025jul29_v.01.png
+│   │   ├── AEsparza_JonesLab_SVLEN_ViolinPlot_2025jul15_v.01.png
+│   │   ├── AEsparza_JonesLab_SVRate_Deletions_PerMb_CaseControl_2025aug04_v.01.pdf
+│   │   ├── AEsparza_JonesLab_SVRate_Deletions_PerMb_CaseControl_2025aug04_v.01.png
+│   │   ├── AEsparza_JonesLab_SVRate_Deletions_PerMb_CaseControl_2025aug12_v.01.pdf
+│   │   ├── AEsparza_JonesLab_SVRate_Deletions_PerMb_CaseControl_2025aug12_v.01.png
+│   │   ├── AEsparza_JonesLab_SVRate_Duplications_PerMb_CaseControl_2025aug04_v.01.pdf
+│   │   ├── AEsparza_JonesLab_SVRate_Duplications_PerMb_CaseControl_2025aug04_v.01.png
+│   │   ├── AEsparza_JonesLab_SVRate_Duplications_PerMb_CaseControl_2025aug12_v.01.pdf
+│   │   ├── AEsparza_JonesLab_SVRate_Duplications_PerMb_CaseControl_2025aug12_v.01.png
+│   │   ├── AEsparza_JonesLab_SVRate_PerMb_CaseONLY_2025aug04_v.03.pdf
+│   │   ├── AEsparza_JonesLab_SVRate_PerMb_CaseONLY_2025jul04_v.01.pdf
+│   │   ├── AEsparza_JonesLab_SVRate_PerMb_CaseONLY_2025jul04_v.01.png
+│   │   ├── AEsparza_JonesLab_SVRate_PerMb_CaseONLY_2025jul04_v.02.pdf
+│   │   ├── AEsparza_JonesLab_SVRate_PerSamplePerMb_2025jul29_v.03.pdf
+│   │   ├── AEsparza_JonesLab_SVRate_PerSamplePerMb_2025jul29_v.03.png
+│   │   ├── AEsparza_JonesLab_SVRate_PerSamplePerMb_2025jul30_v.03.pdf
+│   │   ├── AEsparza_JonesLab_SVRate_PerSamplePerMb_2025jul30_v.03.png
+│   │   ├── AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.pdf
+│   │   ├── AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png
+│   │   ├── AEsparza_JonesLab_SVTypeBreakdown_ByChrom_2025jul29_v.01.png
+│   │   ├── AEsparza_JonesLab_SVTypeBreakdown_ByChrom_CASEONLY_2025aug05_v.01.png
+│   │   ├── AEsparza_JonesLab_SVTypeBreakdown_ByChrom_CASEONLY_Normalized_2025aug05_v.01.png
+│   │   ├── AEsparza_JonesLab_SVTypeBreakdown_ByChrom_gnomAD_2025jul29_v.01.png
+│   │   ├── AEsparza_JonesLab_SVTypeSummary_2025jul15_v.01.tsv
+│   │   ├── AEsparza_JonesLab_Top5Chrom_SVAggregate_CaseControl_Normalized_2025aug05_v.01.png
+│   │   ├── AEsparza_JonesLab_Top5Chrom_SVType_CaseControl_ChrSizeNorm_2025aug05_v.02.png
+│   │   ├── AEsparza_JonesLab_Top5Chrom_SVType_CaseControl_Normalized_2025aug05_v.01.png
+│   │   ├── AEsparza_JonesLab_Top5Chrom_SVType_Case_Normalized_2025aug05_v.01.png
+│   │   ├── AEsparza_JonesLab_TotalSVs_ByChrom_gnomAD_2025jul29_v.01.png
+│   │   └── svtype_comparison
+│   │       ├── AEsparza_JonesLab_BND_BurdenByChrom_2025jul28_v.01.png
+│   │       ├── AEsparza_JonesLab_DEL_BurdenByChrom_2025jul28_v.01.png
+│   │       ├── AEsparza_JonesLab_DUP_BurdenByChrom_2025jul28_v.01.png
+│   │       └── AEsparza_JonesLab_INV_BurdenByChrom_2025jul28_v.01.png
+│   ├── stats
+│   │   ├── AEsparza_JonesLab_KSTest_SVLen_CaseControl_2025jul28_v.01.tsv
+│   │   └── AEsparza_JonesLab_WilcoxonTest_SVLen_CaseControl_2025jul28_v.01.tsv
+│   └── tables
+│       ├── AEsparza_JonesLab_CASES_SVQuantification_ByChromGroup_2025aug05_v.01.xlsx
+│       ├── AEsparza_JonesLab_ChromSVTypeSummary_2025jul17_v.01.tsv
+│       ├── AEsparza_JonesLab_ChromSVTypeTotals_WithAndWithoutBND_2025jul17_v.01.tsv
+│       ├── AEsparza_JonesLab_SVComparison_Combined_2025jul30_v.01.tsv
+│       ├── AEsparza_JonesLab_SVComparison_Combined_CaseGnomAD_2025jul30_v.01.tsv
+│       ├── AEsparza_JonesLab_SVComparison_Combined_NoChrM_2025jul30_v.01.tsv
+│       ├── AEsparza_JonesLab_SVComparison_NoChrM_CaseGnomAD_2025jul30_v.01.tsv
+│       ├── AEsparza_JonesLab_SVComparison_PerMb_CaseONLY_2025jul04_v.02.tsv
+│       ├── AEsparza_JonesLab_SVComparison_PerSamplePerMb_2025jul29_v.03.tsv
+│       ├── AEsparza_JonesLab_SVComparison_PerSamplePerMb_2025jul30_v.03.tsv
+│       ├── AEsparza_JonesLab_SVComparison_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.tsv
+│       ├── AEsparza_JonesLab_SVLengthRange_ByChrom_DEL_DUP_INS_2025jul17_v.01.tsv
+│       ├── AEsparza_JonesLab_SVLengthRange_DEL_DUP_INS_2025jul17_v.02.tsv
+│       ├── AEsparza_JonesLab_SVLengthRange_DEL_DUP_INV_2025jul17_v.01.tsv
+│       ├── AEsparza_JonesLab_SVLengthStats_AllTypes_2025jul17_v.01.tsv
+│       ├── AEsparza_JonesLab_SVNormalized_gnomAD_2025jul30_v.01.tsv
+│       ├── AEsparza_JonesLab_SVNormalized_gnomAD_2025jul30_v.02.tsv
+│       ├── AEsparza_JonesLab_SVNormalized_gnomadOnly_2025jul30_v.01.tsv
+│       ├── AEsparza_JonesLab_SVQuantification_1KGP_2025jul29_v.01.tsv
+│       ├── AEsparza_JonesLab_SVQuantification_ByChromGroup_2025jul22_v.01.tsv
+│       ├── AEsparza_JonesLab_SVQuantification_ByChromGroup_2025jul22_v.01.xlsx
+│       ├── AEsparza_JonesLab_SVQuantification_ByChromGroup_Sorted_2025jul22_v.01.tsv
+│       ├── AEsparza_JonesLab_SVQuantification_gnomadFormatted_2025jul29_v.01.tsv
+│       ├── AEsparza_JonesLab_SVQuantification_gnomadFormatted_2025jul30_v.02.tsv
+│       ├── AEsparza_JonesLab_SVQuantification_gnomadOnly_2025jul29_v.02.tsv
+│       ├── AEsparza_JonesLab_SVQuantification_gnomadOnly_2025jul30_v.03.tsv
+│       ├── AEsparza_JonesLab_SVRate_Deletions_PerMb_CaseControl_2025aug04_v.01.tsv
+│       ├── AEsparza_JonesLab_SVRate_Deletions_PerMb_CaseControl_2025aug12_v.01.tsv
+│       ├── AEsparza_JonesLab_SVRate_Duplications_PerMb_CaseControl_2025aug04_v.01.tsv
+│       ├── AEsparza_JonesLab_SVRate_Duplications_PerMb_CaseControl_2025aug12_v.01.tsv
+│       └── AEsparza_JonesLab_TopBottomChromSVs_2025jul17_v.01.tsv
+└── scripts
+    ├── -Users-austinesparza-Downloads-JonesLab-SV_Exploration_2025jul15-scripts-AEsparza_JonesLab_ParseControlsSV_2025jul16_v.01.py
+    ├── AEsparza_JonesLab_AllSVs_Cleaned_2025jul18_v.01.py
+    ├── AEsparza_JonesLab_AuditGnomADQuantification_2025jul30_v.01.py
+    ├── AEsparza_JonesLab_BNDChromBurdenPlot_2025jul30_v.01.py
+    ├── AEsparza_JonesLab_BND_ChromBurden_NormalizedPerSamplePerMb_2025jul31_v.01.png
+    ├── AEsparza_JonesLab_BND_ChromBurden_NormalizedPerSamplePerMb_2025jul31_v.01.png .txt
+    ├── AEsparza_JonesLab_BND_ChromBurden_NormalizedPerSamplePerMb_2025jul31_v.01.py
+    ├── AEsparza_JonesLab_FormatGnomADQuantification_2025jul30_v.01.py
+    ├── AEsparza_JonesLab_FormatGnomADQuantification_2025jul30_v.02.py
+    ├── AEsparza_JonesLab_Merge_SVQuantTables_2025jul30_v.01.py
+    ├── AEsparza_JonesLab_Merge_SVQuantTables_caseonly_2025jul30_v.01.py
+    ├── AEsparza_JonesLab_ParseCasesSV_2025jul16_v.01.py
+    ├── AEsparza_JonesLab_ParseCasesSV_2025jul16_v.02.py
+    ├── AEsparza_JonesLab_ParseCasesSV_2025jul17_v.01.py
+    ├── AEsparza_JonesLab_ParseCasesSV_2025jul17_v.01.py .py
+    ├── AEsparza_JonesLab_ParseCasesSV_2025jul17_v.02.py
+    ├── AEsparza_JonesLab_ParseControlsSV_2025jul16_v.01.py
+    ├── AEsparza_JonesLab_ParseControlsSV_2025jul17_v.01.py
+    ├── AEsparza_JonesLab_Preprocess_1KGP_ByChrom_2025jul29_v.01.py
+    ├── AEsparza_JonesLab_Preprocess_GnomadSVs_ByChrom_2025jul29_v.01.py
+    ├── AEsparza_JonesLab_SVBarplot_Case_2025jul29_v.01.py
+    ├── AEsparza_JonesLab_SVBarplots_ByGroup_2025jul28_v.01.py
+    ├── AEsparza_JonesLab_SVComparisonNormalized_2025jul29_v.01.py
+    ├── AEsparza_JonesLab_SVComparison_NormalizedPlot_2025jul29_v.04.py
+    ├── AEsparza_JonesLab_SVComparison_NormalizedPlot_2025jul30_v.05.py
+    ├── AEsparza_JonesLab_SVComparison_NormalizedPlot_CaseGnomAD_2025jul30_v.01.py
+    ├── AEsparza_JonesLab_SVComparison_NormalizedPlot_nognomad_2025aug04_v.06.py
+    ├── AEsparza_JonesLab_SVComparison_NormalizedPlot_nognomad_2025jul31_v.06.py
+    ├── AEsparza_JonesLab_SVCountDistributionViolin_2025jul29_v.01.py
+    ├── AEsparza_JonesLab_SVCount_BoxVsViolin_2025jul29_v.01.py
+    ├── AEsparza_JonesLab_SVCount_TotalAndNoBND_2025jul17_v.01.py
+    ├── AEsparza_JonesLab_SVLengthRange_2025jul17_v.01.py
+    ├── AEsparza_JonesLab_SVLengthRange_ByChrom_DEL_DUP_INS_2025jul17_v.01.py
+    ├── AEsparza_JonesLab_SVLengthRange_DEL_DUP_INS_2025jul17_v.02.py
+    ├── AEsparza_JonesLab_SVPlot_ChromLength_2025jul17_v.01.py
+    ├── AEsparza_JonesLab_SVQuantification_1KGP_2025jul29_v.01.py
+    ├── AEsparza_JonesLab_SVQuantify_ByChromAndGroup_2025jul22_v.01.py
+    ├── AEsparza_JonesLab_SVQuantify_ByChromAndGroup_gnomAD_2025jul22_v.01.py
+    ├── AEsparza_JonesLab_SVQuantify_ByChrom_gnomadOnly_2025jul29_v.02.py
+    ├── AEsparza_JonesLab_SVRate_ByChrom_PerSamplePerMb_2025jul29_v.01.py
+    ├── AEsparza_JonesLab_SVRate_Deletions_PerMb_CaseControl_2025aug04_v.01.py
+    ├── AEsparza_JonesLab_SVStats_Tables_2025jul17_v.01.py
+    ├── AEsparza_JonesLab_SVSummary_2025jul15_v.01.py
+    ├── AEsparza_JonesLab_SVSummary_ByChromAndType_2025jul17_v.01.py
+    ├── AEsparza_JonesLab_SVType_BarplotsByGroup_2025jul28_v.01.py
+    ├── AEsparza_JonesLab_Top5Chrom_SVTypeBreakdown_Normalized_2025aug05_v.01.py
+    ├── AEsparza_JonesLab__SORT_SVQuantify_ByChromAndGroup_2025jul22_v.01.py
+    ├── Plot_Duplications_PerMb_CaseControl_2025aug04_v.01.py
+    ├── Plot_SVTypeBreakdown_ByChrom_2025jul29_v.01.py
+    ├── Plot_SVTypeBreakdown_ByChrom_NoBND_2025jul29_v.01.py
+    ├── Plot_TotalSVs_ByChrom_Grouped_Styled_2025jul29_v.02.py
+    ├── Plot_TotalSVs_ByChrom_SVTypes_1KGP_2025jul29_v.01.py
+    ├── Plot_TotalSVs_ByChrom_SV_NotBrokenDown_1KGP_2025jul29_v.01.py
+    ├── add_variant_ids_gnomad_2025jul30_v.01.py
+    ├── combine_dragen_gnomad_sv_tables_2025jul30_v.01.py
+    ├── combine_dragen_gnomad_sv_tables_2025jul30_v.02.py
+    ├── combine_dragen_gnomad_sv_tables_2025jul30_v.03.py
+    ├── compute_gnomad_sv_burden_2025jul30_v.01.py
+    ├── gnomad_dragen_finaltable_standardize.py
+    ├── map_relevant_paths.sh
+    ├── merge_sv_quant_tables_2025jul30_v.01.py
+    ├── scripts-AEsparza_JonesLab_KSTest_2025jul28_v.01.py
+    ├── scripts:AEsparza_JonesLab_SplitSVs_ByGroupAndChrom_2025jul22_v.01.py
+    ├── scripts:AEsparza_JonesLab_WilcoxonTest_2025jul28_v.01.py
+    └── untitled text 8.txt
 
-```
-**Total:** 17 directories, 229 files
-
+17 directories, 229 files
+Austins-MacBook-Pro:~ austinesparza$
 
 ```
 ---
