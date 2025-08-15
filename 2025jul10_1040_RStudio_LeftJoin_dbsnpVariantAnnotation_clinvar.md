@@ -498,3 +498,43 @@ dbsnp_path <- file.path(project_dir, "data_raw", "dbSNP_variants_on_array_cleane
 output_path <- file.path(project_dir, "data_processed", "AEsparza_JonesLab_ClinVar_Annotation_RSOnly_2025jul10_v.01.tsv")
 ```
 
+## **SUPPLEMENTAL APPENDIX – FINAL PROPOSED JOIN STRATEGY FROM NIMISHA**
+
+**AFTER MULTIPLE ATTEMPTS AND PREVIOUS ROUNDS OF QUALITY CONTROL, THE FOLLOWING JOIN STRATEGY WAS PROPOSED BY NIMISHA AND YIELDED THE RESULTS SUMMARIZED BELOW.**
+
+This approach bypasses multi-field R-based joins in favor of a direct, `bcftools`-driven extraction of ClinVar pathogenic entries, followed by rsID matching against the array variant list.
+
+```bash
+# Step 1: Extract all ClinVar records containing "Pathogenic" in the INFO field
+bcftools view -H clinvar.vcf.gz | grep "Pathogenic" > pathogenic_lines.txt
+
+# Step 2: From the array rsID list, identify those present in the pathogenic ClinVar set
+while read -r line; do
+    variant="${line#rs}"
+    grep -w "$variant" pathogenic_lines.txt
+done < dbSNP_variants_on_array.ids.txt > dbSNP_variants_on_array_pathogenic_clinvar.txt
+```
+
+### Validation Summary
+- **List 1:** All variants were correctly flagged as pathogenic.
+- **List 2:** 1 of 150 variants was pathogenic; the remaining variants were benign, likely benign, or had conflicting classifications.
+- **Manual Review:** Thirty randomly selected rsIDs from the final output were cross-checked against ClinVar using NCBI; all classifications matched exactly.
+
+### Resulting Per-Gene Pathogenic Counts
+
+| Gene    | Pathogenic Count |
+| ------- | ---------------- |
+| BRCA2   | 1653             |
+| BRCA1   | 1333             |
+| PALB2   | 36               |
+| RAD51D  | 5                |
+| BRIP1   | 4                |
+| RAD51C  | 4                |
+| CRYGD   | 3                |
+| BTD     | 2                |
+| COL1A1  | 1                |
+| FANCM   | 1                |
+| KIF1A   | 1                |
+| NF1     | 1                |
+| TGFBR2  | 1                |
+
