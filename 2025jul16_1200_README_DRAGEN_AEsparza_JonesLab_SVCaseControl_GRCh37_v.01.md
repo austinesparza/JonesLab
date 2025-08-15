@@ -1,4 +1,4 @@
-# Structural Variant Exploration – Germline Case-Control Comparison (GRCh38)
+# Structural Variant Exploration: Germline Case-Control Comparison (GRCh38)
 
 ## Project Overview
 
