@@ -251,14 +251,14 @@ The following tasks are planned based on the cleaned and harmonized datasets:
 
 ## Notes
 
-- All coordinate-based work must remain tied to GRCh37.
+- All coordinate-based work must remain tied to GRCh38.
 - Visualization choices should prioritize interpretability and publication-readiness.
 - Breakends should be handled as a distinct category in all summaries.
 - Versioned outputs are required at every stage for reproducibility.
 
 ## Supplemental Context and Analytical Rationale
 
-This analysis was initiated to investigate structural variant (SV) patterns in a germline case-control dataset generated using the DRAGEN variant caller and aligned to the GRCh37 reference genome. The provided SV callsets, one for cases and one for controls, contain chromosomal coordinates, SV type, and length data for events including deletions, duplications, inversions, insertions, and unresolved breakends (BNDs). The immediate goal is to produce a foundational characterization of SV burden and length distribution in support of downstream variant prioritization and visualization.
+This analysis was initiated to investigate structural variant (SV) patterns in a germline case-control dataset generated using the DRAGEN variant caller and aligned to the GRCh38 reference genome. The provided SV callsets, one for cases and one for controls, contain chromosomal coordinates, SV type, and length data for events including deletions, duplications, inversions, insertions, and unresolved breakends (BNDs). The immediate goal is to produce a foundational characterization of SV burden and length distribution in support of downstream variant prioritization and visualization.
 
 The initial analytical scope is defined by the following tasks:
 
@@ -267,7 +267,7 @@ The initial analytical scope is defined by the following tasks:
 - Extend this evaluation to include inversions, and determine whether similar trends are observed across groups.
 - Examine the distribution of unresolved breakends (BNDs), treating these as a separate category. This includes quantifying their chromosomal burden and considering possible reasons for partial resolution during variant calling.
 
-The aim of this work is to inform the design of scalable, reproducible SV analysis workflows that are compatible with other GRCh37-based datasets, including genotyping arrays such as the Infinium Global Diversity Array. All coordinate systems and annotations remain GRCh37-specific. Visualization strategies are selected to prioritize clarity, interpretability, and publication-quality output. This document will be expanded as additional input files are incorporated or as analytical priorities shift.
+The aim of this work is to inform the design of scalable, reproducible SV analysis workflows that are compatible with other GRCh38-based datasets, including genotyping arrays such as the Infinium Global Diversity Array. All coordinate systems and annotations remain GRCh38-specific. Visualization strategies are selected to prioritize clarity, interpretability, and publication-quality output. This document will be expanded as additional input files are incorporated or as analytical priorities shift.
 
 ## KS Test Summary: Structural Variant Length Distributions (Cases vs Controls)
  
@@ -411,7 +411,7 @@ Although inversions (`INV`) were included as a structural variant type in both t
 
 
 **Script:** `AEsparza_JonesLab_SVComparison_NormalizedPlot_2025jul30_v.01.py`  
-**Genome Build:** GRCh37  
+**Genome Build:** GRCh38  
 
 ---
 
@@ -428,12 +428,6 @@ SV counts are normalized by both sample size and chromosome length to yield:
 
 ---
 
-## Input Files
-
-**Primary TSV:**  
-`AEsparza_JonesLab_SVComparison_NoChrM_CaseGnomAD_2025jul30_v.01.tsv`  
-- Fields: `chrom`, `group`, `total_SVs`
-
 **Chromosome Sizes:**  
 Reference values for GRCh38 autosomes and sex chromosomes (Mb). Stored internally in script.
 
@@ -446,7 +440,7 @@ SVs_per_sample_per_Mb = total_SVs / (sample_count × chrom_size_mb)
 ```
 
 - `total_SVs`: SV count per chromosome  
-- `sample_count`: 14891 for gnomAD; 1016 for DRAGEN  
+- `sample_count`: 1016 for DRAGEN cases; 2945 for controls
 - `chrom_size_mb`: Chromosome length in megabases (from GRCh38)  
 - Rounded to six decimal places for clarity
 
@@ -621,7 +615,7 @@ BNDs are typically **uninformative for biological association testing** due to l
 | Combined SV master table (case + control, log-scaled) | `AEsparza_JonesLab_AllSVs_Cleaned_2025jul18_v.01.tsv`                    | `results/dataframes/`               |
 | Statistical summary of SV length comparisons          | `AEsparza_JonesLab_SVLengthStats_StatTests_2025jul28_v.01.tsv`           | `results/tables/`                   |
 | Updated README with new figures and analysis summary  | `2025jul28_README_DRAGEN_AEsparza_JonesLab_SVCaseControl_GRCh37_v.04.md` | `./` (project root)                 |
-
+^^Updated readme filed with incorrect build name. GRCh38 confirmed used
 
 ## Document History
 
