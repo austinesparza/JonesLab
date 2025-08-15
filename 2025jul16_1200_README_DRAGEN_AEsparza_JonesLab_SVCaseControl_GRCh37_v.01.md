@@ -455,6 +455,61 @@ SVs_per_sample_per_Mb = total_SVs / (sample_count × chrom_size_mb)
 - PNG: `AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.png`  
 - PDF: `AEsparza_JonesLab_SVRate_PerSamplePerMb_CaseGnomAD_2025jul30_v.01.pdf`
 
+## Source and Generation Details
+
+- **Source file:** `results/tables/AEsparza_JonesLab_SVLengthStats_AllTypes_2025jul17_v.01.tsv`  
+- **Generation script:** `scripts/AEsparza_JonesLab_SVLengthStats_Tables_2025jul17_v.01.py`  
+- **Description:** This file contains per-cohort structural variant (SV) length statistics for DRAGEN-called case and control datasets, stratified by SV type (BND, DEL, DUP, INS, and INV where present).  
+  Statistics include count, minimum, median, mean, maximum, standard deviation, and quartile-based spread (Q1, Q3, IQR).
+
+---
+
+## Structural Variant Length Statistics — DRAGEN Case vs Control
+
+The table below summarizes count, size distribution, and spread for each structural variant (SV) type
+in the DRAGEN-called case and control cohorts.
+
+```
+| sv_type   | group   |    count |   min |   median |           mean |            max |              std |   Q1 |   Q3 |   IQR |
+|:----------|:--------|---------:|------:|---------:|---------------:|---------------:|-----------------:|-----:|-----:|------:|
+| BND       | case    |  2076463 |     1 |        1 |    1           |    1           |      0           |    1 |    1 |     0 |
+| BND       | control |  6634637 |     1 |        1 |    1           |    1           |      0           |    1 |    1 |     0 |
+| DEL       | case    |  4840312 |    50 |      190 | 4553.24        |    9.1229e+07  | 136421           |   76 |  340 |   264 |
+| DEL       | control | 14760659 |    50 |      205 | 6389.88        |    9.1229e+07  | 167910           |   77 |  354 |   277 |
+| DUP       | case    |    46903 |   998 |     4052 |    1.01797e+06 |    1.2595e+08  |      7.25616e+06 | 1698 | 7880 |  6182 |
+| DUP       | control |   181494 |  1000 |     3936 |    1.46502e+06 |    9.95544e+07 |      8.72255e+06 | 1646 | 7381 |  5735 |
+| INS       | case    |  4179534 |    50 |      101 |  156.508       | 1836           |    131.843       |  nan |  nan |   nan |
+| INS       | control | 12710188 |    50 |      102 |  158.724       | 2079           |    135.921       |  nan |  nan |   nan |
+```
+## Source and Generation Details — Top and Bottom Chromosomes by SV Count
+
+- **Source file:** `results/tables/AEsparza_JonesLab_TopBottomChromSVs_2025jul17_v.01.tsv`  
+- **Generation script:** `scripts/AEsparza_JonesLab_SVSummary_2025jul17_v.01.py`  
+- **Description:** This file lists the chromosomes with the highest and lowest total SV counts for each cohort
+  (case and control) in the DRAGEN-called dataset.
+
+---
+
+## Chromosomes with Highest and Lowest SV Burden — DRAGEN Case vs Control
+
+```
+| group   | chrom   |   total_sv_count |
+|:--------|:--------|-----------------:|
+| case    | chr1    |          1026503 |
+| case    | chr2    |          1014179 |
+| case    | chr6    |           840116 |
+| case    | chrM    |               28 |
+| case    | chrY    |             2718 |
+| case    | chr21   |           235695 |
+| control | chr1    |          3176535 |
+| control | chr2    |          3123131 |
+| control | chr6    |          2579239 |
+| control | chrM    |               53 |
+| control | chrY    |             7935 |
+| control | chr21   |           728390 |
+```
+
+
 ---
 
 ## Visualization Description
@@ -594,10 +649,8 @@ BNDs are typically **uninformative for biological association testing** due to l
 
 ## Next Steps
 
-- Calculate BND **proportion per chromosome**: `BND count / total SVs`  
-- Repeat analysis using **DEL, DUP, INS, INV** for comparative context  
 - Consider masking BNDs in chromosomal SV burden models  
-- Reassess BND distribution after filtering for high-confidence regions or mappability tracks
+- Reassess BND distribution after filtering for high-confidence regions
 
 ---
 
@@ -617,6 +670,125 @@ BNDs are typically **uninformative for biological association testing** due to l
 | Updated README with new figures and analysis summary  | `2025jul28_README_DRAGEN_AEsparza_JonesLab_SVCaseControl_GRCh37_v.04.md` | `./` (project root)                 |
 ^^Updated readme filed with incorrect build name. GRCh38 confirmed used
 
+## Reproducibility Checklist — DRAGEN Case vs Control SV Analysis
+
+This section documents the exact sequence of steps required to reproduce the analysis from raw DRAGEN SV calls to final tables and plots.  
+All scripts referenced are located in `scripts/` unless otherwise specified.  
+All file paths are relative to the project root: `SV_Exploration_2025jul15/`.
+
+---
+
+### 1. **Prepare Input Data**
+**Goal:** Ensure DRAGEN-called case and control SV files are available in `data_raw/`.
+
+**Files:**
+- `data_raw/all_cases.dragen.sv.txt`
+- `data_raw/all_controls.dragen.sv.txt`
+
+**Notes:**
+- These are unmodified outputs from the DRAGEN pipeline.
+- Confirm integrity using stored MD5 checksums (`logs/md5_sums.txt`).
+
+---
+
+### 2. **Clean and Standardize SV Data**
+**Goal:** Filter, format, and standardize the DRAGEN outputs for downstream parsing.
+
+**Scripts:**
+- `AEsparza_JonesLab_ParseCasesSV_2025jul17_v.01.py`
+- `AEsparza_JonesLab_ParseControlsSV_2025jul17_v.01.py`
+
+**Outputs:**
+- `data_processed/AEsparza_JonesLab_CleanedCasesSV_2025jul17_v.01.tsv`
+- `data_processed/AEsparza_JonesLab_CleanedControlsSV_2025jul17_v.01.tsv`
+
+---
+
+### 3. **Generate Summary Counts by Chromosome and SV Type**
+**Goal:** Quantify SVs by chromosome and type (DEL, DUP, INV, BND, INS).
+
+**Script:**
+- `AEsparza_JonesLab_SVSummary_2025jul17_v.01.py`
+
+**Outputs:**
+- `results/tables/AEsparza_JonesLab_ChromSVTypeSummary_2025jul17_v.01.tsv`
+- `results/tables/AEsparza_JonesLab_TopBottomChromSVs_2025jul17_v.01.tsv` ← *(Top/Bottom table)*
+
+---
+
+### 4. **Calculate Length Statistics for Each SV Type**
+**Goal:** Summarize SV length distributions across case/control cohorts.
+
+**Script:**
+- `AEsparza_JonesLab_SVLengthStats_Tables_2025jul17_v.01.py`
+
+**Output:**
+- `results/tables/AEsparza_JonesLab_SVLengthStats_AllTypes_2025jul17_v.01.tsv` ← *(Stats table)*
+
+---
+
+### 5. **Produce Length Range Tables**
+**Goal:** Capture min/max ranges per SV type, optionally per chromosome.
+
+**Scripts:**
+- `AEsparza_JonesLab_SVLengthRange_2025jul17_v.01.py`
+
+**Outputs:**
+- `results/tables/AEsparza_JonesLab_SVLengthRange_DEL_DUP_INV_2025jul17_v.01.tsv`
+- `results/tables/AEsparza_JonesLab_SVLengthRange_ByChrom_DEL_DUP_INS_2025jul17_v.01.tsv`
+
+---
+
+### 6. **Normalize SV Counts by Sample Size and Chromosome Length**
+**Goal:** Enable fair burden comparisons between cohorts.
+
+**Scripts:**
+- `AEsparza_JonesLab_SVComparison_NormalizedPlot_2025jul30_v.01.py` *(for gnomAD comparison)*
+- `AEsparza_JonesLab_SVComparison_PerSamplePerMb_2025jul30_v.03.py` *(for DRAGEN case vs control)*
+
+**Inputs:**
+- `results/tables/AEsparza_JonesLab_SVQuantification_ByChromGroup_2025jul22_v.01.tsv`
+- Chromosome size reference: GRCh37 (sourced from UCSC `chromInfo.txt`).
+
+**Outputs:**
+- Normalized TSV files in `results/tables/`
+- Corresponding burden plots in `results/plots/`
+
+---
+
+### 7. **Generate Figures**
+**Goal:** Visualize SV distribution and burden patterns.
+
+**Scripts & Outputs:**
+- Violin plots: `results/plots/AEsparza_JonesLab_SVLEN_ViolinPlot_2025jul17_v.01.png`
+- Bar plots for normalized burden:  
+  - `AEsparza_JonesLab_SVRate_Deletions_PerMb_CaseControl_2025aug12_v.01.png`  
+  - `AEsparza_JonesLab_SVRate_Duplications_PerMb_CaseControl_2025aug12_v.01.png`
+
+---
+
+### 8. **Integrate Summary Tables into README**
+**Goal:** Document final results with direct links to the generated tables and plots.
+
+**Included Tables:**
+- **SV Length Stats Table** → `AEsparza_JonesLab_SVLengthStats_AllTypes_2025jul17_v.01.tsv`
+- **Top/Bottom Chromosomes Table** → `AEsparza_JonesLab_TopBottomChromSVs_2025jul17_v.01.tsv`
+
+**Included Figures:**
+- Normalized burden plots for deletions and duplications
+- SV length violin plots
+
+---
+
+**Final Verification:**
+1. All output files present in `results/tables/` and `results/plots/`
+2. README cross-references match actual filenames and versions
+3. MD5 checksums confirm no corruption since last run
+4. All plots regenerate without error when scripts are re-run from raw files
+
+---
+
+
 ## Document History
 
 | Version | Date       | Updates Summary                                                                                         |
@@ -626,7 +798,7 @@ BNDs are typically **uninformative for biological association testing** due to l
 | v.03    | 2025-07-22 | Split by group/chromosome, added SV type summaries, log-scaled lengths, etc.                            |
 | v.04    | 2025-07-28 | Generated SV burden bar plots (case/control, by SV type); performed KS and Wilcoxon tests on SV lengths |
 | v.05    | 2025-07-29 | SV burden bar plots (case/control, by SV type) uploaded to JonesLab repo, pathways in report            |
-
+| v.06    | 2025-08-14 | Added comprehensive reproducibility checklist and file provenance details to README                     |
 
 
 **Current Version:** v.06  
